@@ -1,6 +1,7 @@
 package com.q1.qatania
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,14 +12,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.q1.qatania.model.GameBoardModel
 import io.github.sceneview.SceneView
 import io.github.sceneview.rememberModelInstance
+import kotlinx.serialization.json.Json
+import java.io.BufferedReader
+import java.io.File
+import kotlin.math.log
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val inputString = assets
+                .open("exampleboard.json")
+                .bufferedReader()
+                .use { it.readText() }
+            val board = Json.decodeFromString<GameBoardModel>(inputString)
+            Log.d("board", board.toString())
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {
                     SceneView(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
