@@ -43,6 +43,7 @@ fun GameScene() {
     val gameBoard = currentGameBoard.value
     val tiles = gameBoard?.tiles
     val settlementPositions = gameBoard?.settlementPositions
+    val roads = gameBoard?.roads
 
 
     val engine = rememberEngine()
@@ -110,6 +111,37 @@ fun GameScene() {
                             0.05f,
                             settlementPosition.coordinates[1].toFloat()
                         ),
+                    )
+                }
+            }
+        }
+
+        roads?.forEach { road ->
+            if (road.owner != null){
+                rememberModelInstance(modelLoader, "models/road.glb")?.let { modelInstance ->
+
+                    modelInstance.materialInstances.forEach { materialInstance ->
+                        materialInstance.setBaseColorFactor(hexToFloat4(road.color))
+                    }
+
+                    ModelNode(
+                        modelInstance = modelInstance,
+                        scaleToUnits = 0.1f,
+                        autoAnimate = true,
+                        position = Float3(
+                            road.coordinates[0].toFloat(),
+                            0.05f,
+                            road.coordinates[1].toFloat()
+                        ),
+                        rotation = Float3(
+                            0f,
+                            //-60f,
+                            (Math.toDegrees(road.rotationAngle).toFloat()-90) * 2,
+                                // 90 -> 0 || 270 -> 180 // ==> -90 (+90)
+                                // 150 -> 120 || -30 -> -60 // ==> -30 (+150)
+                                // 30 -> -120 || -150 -> -300 // ==> -150 (+30)
+                            0f
+                        )
                     )
                 }
             }

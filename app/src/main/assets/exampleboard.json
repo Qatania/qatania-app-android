@@ -701,8 +701,8 @@
   "roads": [
     {
       "id": 1,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#00FF00",
       "coordinates": [
         4.3301270189221945,
         7.499999999999998
@@ -711,8 +711,8 @@
     },
     {
       "id": 2,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#00FF00",
       "coordinates": [
         8.660254037844386,
         0.0
@@ -721,8 +721,8 @@
     },
     {
       "id": 3,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         4.330127018922191,
         -7.499999999999998
@@ -731,8 +731,8 @@
     },
     {
       "id": 4,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -4.3301270189221945,
         -7.499999999999998
@@ -781,8 +781,8 @@
     },
     {
       "id": 9,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         12.99038105676658,
         22.499999999999993
@@ -1211,8 +1211,8 @@
     },
     {
       "id": 52,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -8.660254037844393,
         -29.999999999999993
@@ -1261,8 +1261,8 @@
     },
     {
       "id": 57,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -30.31088913245535,
         -22.49999999999999
@@ -1291,8 +1291,8 @@
     },
     {
       "id": 60,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -38.97114317029973,
         -7.4999999999999964
@@ -1301,8 +1301,8 @@
     },
     {
       "id": 61,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -43.301270189221924,
         8.881784197001252E-16
@@ -1311,8 +1311,8 @@
     },
     {
       "id": 62,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -38.97114317029973,
         7.499999999999998
@@ -1321,8 +1321,8 @@
     },
     {
       "id": 63,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -30.31088913245535,
         7.499999999999998
@@ -1391,8 +1391,8 @@
     },
     {
       "id": 70,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -8.660254037844382,
         29.999999999999993
@@ -1401,8 +1401,8 @@
     },
     {
       "id": 71,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         -4.3301270189221865,
         37.5
@@ -1411,8 +1411,8 @@
     },
     {
       "id": 72,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#C2EB2F",
       "coordinates": [
         4.330127018922199,
         37.5
