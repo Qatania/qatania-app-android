@@ -1,5 +1,6 @@
 package com.q1.qatania.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.q1.qatania.dataRepository.GameBoardRepository
 import kotlinx.coroutines.flow.map
@@ -9,6 +10,12 @@ class GameBoardViewModel(
 ) : ViewModel() {
     private val _scalingFactor = 20.0 // trial and error xd
     val boardFlow = repository.gameboardFlow().map { receivedBoard ->
+        if (receivedBoard.sizeOfHex != 6)
+            Log.w(
+                "Gameboard",
+                "Received Board has a size of Hex of ${receivedBoard.sizeOfHex} and not 6, which means the Positioning of the tiles might be wrong."
+            )
+        
         receivedBoard.copy(
             tiles = receivedBoard.tiles.map { receivedTile ->
                 receivedTile.copy(
