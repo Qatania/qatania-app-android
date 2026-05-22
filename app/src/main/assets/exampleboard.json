@@ -741,8 +741,8 @@
     },
     {
       "id": 5,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -8.660254037844386,
         0.0
@@ -751,8 +751,8 @@
     },
     {
       "id": 6,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -4.330127018922191,
         7.499999999999998
@@ -771,8 +771,8 @@
     },
     {
       "id": 8,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         4.3301270189221945,
         22.499999999999993
@@ -791,8 +791,8 @@
     },
     {
       "id": 10,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         17.320508075688775,
         14.999999999999996
@@ -811,8 +811,8 @@
     },
     {
       "id": 12,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         21.65063509461097,
         7.499999999999998
@@ -821,8 +821,8 @@
     },
     {
       "id": 13,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         25.98076211353316,
         0.0
@@ -831,8 +831,8 @@
     },
     {
       "id": 14,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         21.650635094610962,
         -7.499999999999998
@@ -841,8 +841,8 @@
     },
     {
       "id": 15,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         12.990381056766577,
         -7.499999999999998
@@ -881,8 +881,8 @@
     },
     {
       "id": 19,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -3.552713678800501E-15,
         -14.999999999999996
@@ -891,8 +891,8 @@
     },
     {
       "id": 20,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -4.330127018922198,
         -22.499999999999993
@@ -951,8 +951,8 @@
     },
     {
       "id": 26,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -21.650635094610962,
         7.499999999999998
@@ -961,8 +961,8 @@
     },
     {
       "id": 27,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         -12.990381056766577,
         7.499999999999998
@@ -971,8 +971,8 @@
     },
     {
       "id": 28,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         -17.320508075688767,
         14.999999999999996
@@ -981,8 +981,8 @@
     },
     {
       "id": 29,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -12.990381056766577,
         22.499999999999993
@@ -1021,8 +1021,8 @@
     },
     {
       "id": 33,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         21.65063509461097,
         37.500000000000014
@@ -1031,8 +1031,8 @@
     },
     {
       "id": 34,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         25.980762113533164,
         30.0
@@ -1071,8 +1071,8 @@
     },
     {
       "id": 38,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         30.31088913245535,
         7.499999999999998
@@ -1091,8 +1091,8 @@
     },
     {
       "id": 40,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         43.301270189221924,
         -8.881784197001252E-16
@@ -1101,8 +1101,8 @@
     },
     {
       "id": 41,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         38.97114317029973,
         -7.499999999999998
@@ -1111,8 +1111,8 @@
     },
     {
       "id": 42,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         30.31088913245535,
         -7.499999999999998
@@ -1121,8 +1121,8 @@
     },
     {
       "id": 43,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         34.64101615137754,
         -14.999999999999993
@@ -1131,8 +1131,8 @@
     },
     {
       "id": 44,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         30.310889132455344,
         -22.49999999999999
@@ -1141,8 +1141,8 @@
     },
     {
       "id": 45,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         21.65063509461096,
         -22.499999999999993
@@ -1171,8 +1171,8 @@
     },
     {
       "id": 48,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         12.990381056766566,
         -37.5
@@ -1181,8 +1181,8 @@
     },
     {
       "id": 49,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         8.660254037844378,
         -29.999999999999993
@@ -1191,8 +1191,8 @@
     },
     {
       "id": 50,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#6A64E3",
       "coordinates": [
         4.330127018922183,
         -37.5
@@ -1221,8 +1221,8 @@
     },
     {
       "id": 53,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -12.99038105676659,
         -37.50000000000001
@@ -1271,8 +1271,8 @@
     },
     {
       "id": 58,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -34.64101615137754,
         -14.999999999999993
@@ -1281,8 +1281,8 @@
     },
     {
       "id": 59,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -30.31088913245535,
         -7.499999999999998
@@ -1361,8 +1361,8 @@
     },
     {
       "id": 67,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -25.980762113533157,
         29.999999999999986
@@ -1371,8 +1371,8 @@
     },
     {
       "id": 68,
-      "owner": null,
-      "color": null,
+      "owner": "testUser",
+      "color": "#E3646A",
       "coordinates": [
         -21.650635094610962,
         37.499999999999986

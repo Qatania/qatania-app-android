@@ -74,7 +74,6 @@ fun GameScene() {
 
     ) {
 
-        // Spawn Tiles
         tiles?.forEach { tile ->
             rememberModelInstance(modelLoader, tile.type.path)?.let {
                 ModelNode(
