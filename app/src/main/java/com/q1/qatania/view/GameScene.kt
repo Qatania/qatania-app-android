@@ -13,6 +13,7 @@ import com.q1.qatania.viewmodel.GameBoardViewModel
 import com.q1.qatania.viewmodel.GameBoardViewModelFactory
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
+import io.github.sceneview.gesture.CameraGestureDetector
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
@@ -40,14 +41,27 @@ fun GameScene() {
     val modelLoader = rememberModelLoader(engine)
     val envLoader = rememberEnvironmentLoader(engine)
 
+    val homePos = Float3(0f, 10f, 0.1f)
+    val targetPos = Float3(0f, 0f, 0f)
+
+    val cameraManipulator = rememberCameraManipulator(
+            creator = {
+                CameraGestureDetector.DefaultCameraManipulator(
+                    orbitHomePosition = homePos,
+                    targetPosition = targetPos,
+                    pinchZoomSpeed = 0.9f,
+                    pinchZoomDamping = 0.7f
+                )
+            }
+        )
+
+    val cameraNode = rememberCameraNode(engine)
+
     SceneView(
         modifier = Modifier.fillMaxSize(),
         engine = engine,
-        cameraNode = rememberCameraNode(engine),
-        cameraManipulator = rememberCameraManipulator(
-            orbitHomePosition = Float3(0f, 10f, 0.1f),
-            targetPosition = Float3(0f, 0f, 0f)
-        )
+        cameraNode = cameraNode,
+        cameraManipulator = cameraManipulator
 
     ) {
 
@@ -57,7 +71,8 @@ fun GameScene() {
                 ModelNode(
                     modelInstance = it,
                     scaleToUnits = 1.0f,
-                    autoAnimate = true, position = Float3(
+                    autoAnimate = true,
+                    position = Float3(
                         tile.coordinates[0].toFloat(),
                         0f,
                         tile.coordinates[1].toFloat()
