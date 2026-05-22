@@ -24,7 +24,7 @@ class GameBoardRepository(
     }
 
     private fun _simulateServerMessage(i: Int): String {
-        val name = if (i % 2 == 0) "exampleboard.json" else "secondBoard.json"
+        val name = if (i % 2 == 0 || true) "exampleboard.json" else "secondBoard.json"
         val json = context.assets
             .open(name)
             .bufferedReader()

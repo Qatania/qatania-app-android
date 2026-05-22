@@ -1,19 +1,26 @@
 package com.q1.qatania.view
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.filament.Colors
 import com.q1.qatania.dataRepository.GameBoardRepository
+import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.GameBoardViewModel
 import com.q1.qatania.viewmodel.GameBoardViewModelFactory
 import dev.romainguy.kotlin.math.Float3
+import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.SceneView
 import io.github.sceneview.gesture.CameraGestureDetector
+import io.github.sceneview.material.setBaseColorFactor
+import io.github.sceneview.material.setColor
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
@@ -35,6 +42,7 @@ fun GameScene() {
 
     val gameBoard = currentGameBoard.value
     val tiles = gameBoard?.tiles
+    val settlementPositions = gameBoard?.settlementPositions
 
 
     val engine = rememberEngine()
@@ -45,15 +53,15 @@ fun GameScene() {
     val targetPos = Float3(0f, 0f, 0f)
 
     val cameraManipulator = rememberCameraManipulator(
-            creator = {
-                CameraGestureDetector.DefaultCameraManipulator(
-                    orbitHomePosition = homePos,
-                    targetPosition = targetPos,
-                    pinchZoomSpeed = 0.9f,
-                    pinchZoomDamping = 0.7f
-                )
-            }
-        )
+        creator = {
+            CameraGestureDetector.DefaultCameraManipulator(
+                orbitHomePosition = homePos,
+                targetPosition = targetPos,
+                pinchZoomSpeed = 0.9f,
+                pinchZoomDamping = 0.7f
+            )
+        }
+    )
 
     val cameraNode = rememberCameraNode(engine)
 
@@ -79,14 +87,34 @@ fun GameScene() {
                     )
                 )
             }
-            android.util.Log.d(
+            Log.d(
                 "GameScene",
                 "Spawning TileNode for tile: ${tile.id}, ${tile.type}, ${tile.coordinates}"
             )
         }
 
+        settlementPositions?.forEach { settlementPosition ->
+            if (settlementPosition.building != null) {
+                rememberModelInstance(modelLoader, settlementPosition.building.type.path)?.let { modelInstance ->
 
-        /*LightNode(
+                    modelInstance.materialInstances.forEach { materialInstance ->
+                        materialInstance.setBaseColorFactor(hexToFloat4(settlementPosition.building.color))
+                    }
+
+                    ModelNode(
+                        modelInstance = modelInstance,
+                        scaleToUnits = 0.1f,
+                        autoAnimate = true,
+                        position = Float3(
+                            settlementPosition.coordinates[0].toFloat(),
+                            0.05f,
+                            settlementPosition.coordinates[1].toFloat()
+                        ),
+                    )
+                }
+            }
+        }
+            /*LightNode(
             type = LightManager.Type.POINT,
             intensity = 100_000f,
             color = io.github.sceneview.math.Color(1f, 0.95f, 0.9f),

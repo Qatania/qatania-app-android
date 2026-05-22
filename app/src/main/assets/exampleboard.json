@@ -175,7 +175,11 @@
   "settlementPositions": [
     {
       "id": 1,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         1.1842378929335002E-15,
         9.999999999999998
@@ -183,7 +187,11 @@
     },
     {
       "id": 2,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         8.660254037844387,
         4.999999999999999
@@ -191,7 +199,11 @@
     },
     {
       "id": 3,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#6A64E3",
+        "type": "Settlement"
+      },
       "coordinates": [
         8.660254037844384,
         -4.999999999999999
@@ -199,7 +211,11 @@
     },
     {
       "id": 4,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#E3646A",
+        "type": "Settlement"
+      },
       "coordinates": [
         -2.3684757858670005E-15,
         -9.999999999999998
@@ -207,7 +223,11 @@
     },
     {
       "id": 5,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#E3646A",
+        "type": "Settlement"
+      },
       "coordinates": [
         -8.660254037844387,
         -4.999999999999999
@@ -215,7 +235,11 @@
     },
     {
       "id": 6,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#6A64E3",
+        "type": "Settlement"
+      },
       "coordinates": [
         -8.660254037844384,
         4.999999999999999
@@ -223,7 +247,11 @@
     },
     {
       "id": 7,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         2.3684757858670005E-15,
         19.999999999999996
@@ -231,7 +259,11 @@
     },
     {
       "id": 8,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         8.660254037844387,
         24.99999999999999
@@ -239,7 +271,11 @@
     },
     {
       "id": 9,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#E3646A",
+        "type": "Settlement"
+      },
       "coordinates": [
         17.320508075688775,
         19.999999999999996
@@ -287,7 +323,11 @@
     },
     {
       "id": 15,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#6A64E3",
+        "type": "Settlement"
+      },
       "coordinates": [
         8.66025403784438,
         -24.99999999999999
@@ -311,7 +351,11 @@
     },
     {
       "id": 18,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         -17.320508075688775,
         -19.999999999999996
@@ -319,7 +363,11 @@
     },
     {
       "id": 19,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         -17.320508075688775,
         -9.999999999999998
@@ -335,7 +383,11 @@
     },
     {
       "id": 21,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         -25.980762113533157,
         4.999999999999999
@@ -383,7 +435,11 @@
     },
     {
       "id": 27,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#6A64E3",
+        "type": "Settlement"
+      },
       "coordinates": [
         25.980762113533164,
         35.00000000000001
@@ -391,7 +447,11 @@
     },
     {
       "id": 28,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         25.980762113533164,
         24.99999999999999
@@ -399,7 +459,11 @@
     },
     {
       "id": 29,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#6A64E3",
+        "type": "Settlement"
+      },
       "coordinates": [
         34.64101615137754,
         19.99999999999999
@@ -407,7 +471,11 @@
     },
     {
       "id": 30,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         34.64101615137754,
         9.999999999999996
@@ -415,7 +483,11 @@
     },
     {
       "id": 31,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         43.301270189221924,
         4.999999999999997
@@ -447,7 +519,11 @@
     },
     {
       "id": 35,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#6A64E3",
+        "type": "Settlement"
+      },
       "coordinates": [
         25.98076211353315,
         -24.99999999999999
@@ -495,7 +571,11 @@
     },
     {
       "id": 41,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         -17.320508075688785,
         -40.000000000000014
@@ -543,7 +623,11 @@
     },
     {
       "id": 47,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#E3646A",
+        "type": "Settlement"
+      },
       "coordinates": [
         -43.301270189221924,
         4.999999999999999
@@ -551,7 +635,11 @@
     },
     {
       "id": 48,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#E3646A",
+        "type": "Settlement"
+      },
       "coordinates": [
         -34.64101615137754,
         9.999999999999996
@@ -575,7 +663,11 @@
     },
     {
       "id": 51,
-      "building": null,
+      "building": {
+        "owner": "testUser",
+        "color": "#C2EB2F",
+        "type": "Settlement"
+      },
       "coordinates": [
         -25.980762113533157,
         34.999999999999986
