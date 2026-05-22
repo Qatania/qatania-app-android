@@ -54,7 +54,7 @@ fun GameScene() {
         engine = engine,
         cameraNode = rememberCameraNode(engine),
         cameraManipulator = rememberCameraManipulator(
-            orbitHomePosition = Float3(0f, 200f, 50f),
+            orbitHomePosition = Float3(0f, 10f, 0.1f),
             targetPosition = Float3(0f, 0f, 0f)
         )
 
@@ -67,7 +67,7 @@ fun GameScene() {
             */
             rememberModelInstance(modelLoader, tile.type.path)?.let {
                 ModelNode(modelInstance = it,
-                    scaleToUnits = 20.0f,
+                    scaleToUnits = 1.0f,
                     autoAnimate = true, position = Float3(
                     tile.coordinates[0].toFloat(),
                     0f,
