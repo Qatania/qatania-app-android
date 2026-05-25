@@ -1,4 +1,4 @@
-package com.q1.qatania.model
+package com.q1.qatania.model.gameboard
 
 enum class TileType(val path: String) {
     WHEAT("models/wheatfield.glb"),

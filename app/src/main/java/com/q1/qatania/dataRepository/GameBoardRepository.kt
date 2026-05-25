@@ -1,7 +1,8 @@
 package com.q1.qatania.dataRepository
 
 import android.content.Context
-import com.q1.qatania.model.GameBoardModel
+import com.q1.qatania.model.gameboard.GameBoardModel
+import com.q1.qatania.util.jsonParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,8 +18,7 @@ class GameBoardRepository(
             // if message from server with gameboard
             val message: String = _simulateServerMessage(i++)
 
-
-            emit(Json.decodeFromString(message))
+            emit(jsonParser.decodeFromString(message))
             delay(10000)
         }
     }
