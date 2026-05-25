@@ -191,7 +191,7 @@ fun GameScene() {
         }
 
         ResourceBar(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.TopStart),
             playerInfoViewModel = playerInfoViewModel
         )
     }

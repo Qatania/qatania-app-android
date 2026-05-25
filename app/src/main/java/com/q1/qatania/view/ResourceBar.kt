@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -50,13 +51,11 @@ fun ResourceBar(modifier: Modifier, playerInfoViewModel: PlayerInfoViewModel) {
     }
 
 
-    Row(
+    Column(
         modifier = modifier
-            .fillMaxWidth()
-            .background(Color.LightGray, shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-            .padding(horizontal = 8.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 10.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+
     ) {
         displayOrder.forEach { tileType ->
             val count = resources?.get(tileType) ?: 0
@@ -74,12 +73,19 @@ private fun ResourceItem(
 ) {
     val iconRes = getResourceIcon(tileType)
 
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .background(Color.LightGray.copy(alpha = 0.5f), shape = RoundedCornerShape(8.dp))
+            .padding(10.dp)
+
+    ) {
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = tileType.name,
             modifier = Modifier
-                .size(30.dp)
+                .size(20.dp)
                 .pointerInput(tileType) {
                     detectTapGestures(
                         onDoubleTap = {
@@ -94,7 +100,7 @@ private fun ResourceItem(
         Text(
             text = count.toString(),
             color = Color.White,
-            fontSize = 18.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )
     }
