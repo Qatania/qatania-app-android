@@ -40,7 +40,7 @@ fun ResourceBar(modifier: Modifier, playerInfoViewModel: PlayerInfoViewModel) {
         TileType.ORE
     )
 
-    val player = playerInfoViewModel.boardFlow.collectAsState(
+    val player = playerInfoViewModel.playerFlow.collectAsState(
         initial = null
     )
     val resources = player.value?.resources

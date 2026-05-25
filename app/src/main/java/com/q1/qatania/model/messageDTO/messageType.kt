@@ -1,0 +1,36 @@
+package com.q1.qatania.model.messageDTO
+
+enum class MessageType {
+    //Server Messages
+    CONNECTION_SUCCESSFUL,
+    CLIENT_DISCONNECTED,
+    ERROR,
+    ALERT,
+    LOBBY_UPDATED,
+    PLAYER_JOINED,
+    LOBBY_CREATED,
+    GAME_BOARD_JSON,
+    DICE_RESULT,
+    GAME_WON,
+    GAME_STARTED,
+    NEXT_TURN,
+    PLAYER_RESOURCE_UPDATE,
+
+    //Client Messages
+    CREATE_LOBBY,
+    JOIN_LOBBY,
+    LEAVE_LOBBY,
+    SET_USERNAME,
+    PLACE_SETTLEMENT,
+    UPGRADE_SETTLEMENT,
+    PLACE_ROAD,
+    START_GAME,
+    BUY_DEVELOPMENT_CARD,
+    ROLL_DICE,
+    SET_READY,
+    END_TURN,
+    TRADE_WITH_BANK,
+    TRADE_WITH_PLAYER,
+    CHEAT_ATTEMPT,
+    REPORT_PLAYER
+}
