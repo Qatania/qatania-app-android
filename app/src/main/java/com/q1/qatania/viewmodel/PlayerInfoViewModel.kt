@@ -1,6 +1,7 @@
 package com.q1.qatania.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.q1.qatania.dataRepository.PlayerInfoRepository
@@ -17,9 +18,9 @@ class PlayerInfoViewModel(
 
     private val repository = PlayerInfoRepository()
 
-    private val playersFlow = repository.playerFlow()
+    val playersMapFlow = repository.playerFlow()
 
-    val playerFlow: StateFlow<PlayerModel?> = playersFlow
+    val playerFlow: StateFlow<PlayerModel?> = playersMapFlow
         .map { players -> players[id] }
         .stateIn(
             scope = viewModelScope,

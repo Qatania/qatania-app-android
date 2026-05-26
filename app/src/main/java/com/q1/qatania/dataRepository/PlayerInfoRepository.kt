@@ -33,7 +33,7 @@ class PlayerInfoRepository() {
                   "color": "#00FF00",
                   "isHost": true,
                   "isReady": false,
-                  "isActivePlayer": false,
+                  "isActivePlayer": true,
                   "canRollDice": false,
                   "isSetupRound": false,
                   "victoryPoints": 4,

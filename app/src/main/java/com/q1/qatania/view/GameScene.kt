@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -56,6 +57,7 @@ fun GameScene() {
 
     // --- PlayerInfoViewModel---
     val playerInfoViewModel: PlayerInfoViewModel = viewModel()
+
     // ---
 
     // --- 3D Model ---
@@ -84,115 +86,123 @@ fun GameScene() {
     val cameraNode = rememberCameraNode(engine)
     // ---
 
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        SceneView(
-            modifier = Modifier.fillMaxSize(),
-            engine = engine,
-            cameraNode = cameraNode,
-            cameraManipulator = cameraManipulator
-
+    Scaffold(
+        topBar = {
+            PlayerBar()
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Log.d(
-                "GameScene",
-                "Spawning Board"
-            )
-            tiles?.forEach { tile ->
-                rememberModelInstance(modelLoader, tile.type.path)?.let {
-                    ModelNode(
-                        modelInstance = it,
-                        scaleToUnits = 1.0f,
-                        autoAnimate = true,
-                        position = Float3(
-                            tile.coordinates[0].toFloat(),
-                            0f,
-                            tile.coordinates[1].toFloat()
-                        )
-                    )
-                }
-            }
+            SceneView(
+                modifier = Modifier.fillMaxSize(),
+                engine = engine,
+                cameraNode = cameraNode,
+                cameraManipulator = cameraManipulator
 
-            settlementPositions?.forEach { settlementPosition ->
-                if (settlementPosition.building != null) {
-                    rememberModelInstance(
-                        modelLoader,
-                        settlementPosition.building.type.path
-                    )?.let { modelInstance ->
-
-                        modelInstance.materialInstances.forEach { materialInstance ->
-                            materialInstance.setBaseColorFactor(hexToFloat4(settlementPosition.building.color))
-                        }
-
+            ) {
+                Log.d(
+                    "GameScene",
+                    "Spawning Board"
+                )
+                tiles?.forEach { tile ->
+                    rememberModelInstance(modelLoader, tile.type.path)?.let {
                         ModelNode(
-                            modelInstance = modelInstance,
-                            scaleToUnits = 0.1f,
+                            modelInstance = it,
+                            scaleToUnits = 1.0f,
                             autoAnimate = true,
                             position = Float3(
-                                settlementPosition.coordinates[0].toFloat(),
-                                0.05f,
-                                settlementPosition.coordinates[1].toFloat()
-                            ),
-                        )
-                    }
-                }
-            }
-
-            roads?.forEach { road ->
-                if (road.owner != null) {
-                    rememberModelInstance(modelLoader, "models/road.glb")?.let { modelInstance ->
-
-                        modelInstance.materialInstances.forEach { materialInstance ->
-                            materialInstance.setBaseColorFactor(hexToFloat4(road.color))
-                        }
-
-                        ModelNode(
-                            modelInstance = modelInstance,
-                            scaleToUnits = 0.1f,
-                            autoAnimate = true,
-                            position = Float3(
-                                road.coordinates[0].toFloat(),
-                                0.05f,
-                                road.coordinates[1].toFloat()
-                            ),
-                            rotation = Float3(
+                                tile.coordinates[0].toFloat(),
                                 0f,
-                                //-60f,
-                                (Math.toDegrees(road.rotationAngle).toFloat() - 90) * 2,
-                                // 90 -> 0 || 270 -> 180 // ==> -90 (+90)
-                                // 150 -> 120 || -30 -> -60 // ==> -30 (+150)
-                                // 30 -> -120 || -150 -> -300 // ==> -150 (+30)
-                                0f
+                                tile.coordinates[1].toFloat()
                             )
                         )
                     }
                 }
+
+                settlementPositions?.forEach { settlementPosition ->
+                    if (settlementPosition.building != null) {
+                        rememberModelInstance(
+                            modelLoader,
+                            settlementPosition.building.type.path
+                        )?.let { modelInstance ->
+
+                            modelInstance.materialInstances.forEach { materialInstance ->
+                                materialInstance.setBaseColorFactor(hexToFloat4(settlementPosition.building.color))
+                            }
+
+                            ModelNode(
+                                modelInstance = modelInstance,
+                                scaleToUnits = 0.1f,
+                                autoAnimate = true,
+                                position = Float3(
+                                    settlementPosition.coordinates[0].toFloat(),
+                                    0.05f,
+                                    settlementPosition.coordinates[1].toFloat()
+                                ),
+                            )
+                        }
+                    }
+                }
+
+                roads?.forEach { road ->
+                    if (road.owner != null) {
+                        rememberModelInstance(
+                            modelLoader,
+                            "models/road.glb"
+                        )?.let { modelInstance ->
+
+                            modelInstance.materialInstances.forEach { materialInstance ->
+                                materialInstance.setBaseColorFactor(hexToFloat4(road.color))
+                            }
+
+                            ModelNode(
+                                modelInstance = modelInstance,
+                                scaleToUnits = 0.1f,
+                                autoAnimate = true,
+                                position = Float3(
+                                    road.coordinates[0].toFloat(),
+                                    0.05f,
+                                    road.coordinates[1].toFloat()
+                                ),
+                                rotation = Float3(
+                                    0f,
+                                    //-60f,
+                                    (Math.toDegrees(road.rotationAngle).toFloat() - 90) * 2,
+                                    // 90 -> 0 || 270 -> 180 // ==> -90 (+90)
+                                    // 150 -> 120 || -30 -> -60 // ==> -30 (+150)
+                                    // 30 -> -120 || -150 -> -300 // ==> -150 (+30)
+                                    0f
+                                )
+                            )
+                        }
+                    }
+                }
+                /*LightNode(
+                type = LightManager.Type.POINT,
+                intensity = 100_000f,
+                color = io.github.sceneview.math.Color(1f, 0.95f, 0.9f),
+                direction = io.github.sceneview.math.Direction(0f, -1f, 0f),
+                position = io.github.sceneview.math.Position(0f, 5f, 0f)
+            )*/
             }
-            /*LightNode(
-            type = LightManager.Type.POINT,
-            intensity = 100_000f,
-            color = io.github.sceneview.math.Color(1f, 0.95f, 0.9f),
-            direction = io.github.sceneview.math.Direction(0f, -1f, 0f),
-            position = io.github.sceneview.math.Position(0f, 5f, 0f)
-        )*/
-        }
 
-        // Reset Button
-        Button(
-            onClick = {
-                resetCounter++
-            },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Text("Reset")
-        }
+            // Reset Button
+            Button(
+                onClick = {
+                    resetCounter++
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+            ) {
+                Text("Reset")
+            }
 
-        ResourceBar(
-            modifier = Modifier.align(Alignment.TopStart),
-            playerInfoViewModel = playerInfoViewModel
-        )
+            ResourceBar(
+                modifier = Modifier.align(Alignment.TopStart),
+                playerInfoViewModel = playerInfoViewModel
+            )
+        }
     }
 }
