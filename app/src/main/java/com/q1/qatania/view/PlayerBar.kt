@@ -1,10 +1,18 @@
 package com.q1.qatania.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,21 +28,29 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
+import com.q1.qatania.util.getResourceImage
 import com.q1.qatania.viewmodel.PlayerInfoViewModel
 
 @Composable
@@ -44,6 +60,8 @@ fun PlayerBar() {
     val listState = rememberLazyListState()
 
     val playersMap = viewModel.playersMapFlow.collectAsState(initial = emptyMap())
+
+    var expandedPlayerId by remember { mutableStateOf<String?>(null) }
 
     LazyRow(
         state = listState,
@@ -55,16 +73,38 @@ fun PlayerBar() {
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         items(items = playersMap.value.values.toList()) { player ->
-            PlayerCard(
-                player = player
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                PlayerCard(
+                    player = player,
+                    onClick = {
+                        expandedPlayerId = if (expandedPlayerId == player.id) null else player.id
+                    }
+                )
+
+                AnimatedVisibility(
+                    visible = expandedPlayerId == player.id,
+                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
+                ) {
+                    PlayerResourcePopup(
+                        player = player,
+                        modifier = Modifier.width(260.dp),
+                        onCheatAttempt = { tileType ->
+                            viewModel.cheat(tileType)
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
 fun PlayerCard(
-    player: PlayerModel
+    player: PlayerModel,
+    onClick: () -> Unit
 ) {
     val borderColor = Color(player.color.toColorInt())
     val vpTextColor = Color.Black
@@ -76,12 +116,7 @@ fun PlayerCard(
             .border(2.dp, borderColor, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(Color.Transparent)
-            .clickable {  }
-            .onGloballyPositioned { coords ->
-                /*if (isSelected) {
-                    onPlayerOffsetChanged(coords.positionInRoot().x)
-                }*/
-            }
+            .clickable { onClick() }
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Box(
@@ -131,6 +166,61 @@ fun PlayerCard(
                     text = "${player.victoryPoints} VP",
                     color = vpTextColor
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun PlayerResourcePopup(
+    player: PlayerModel,
+    modifier: Modifier = Modifier,
+    onCheatAttempt: (TileType) -> Unit
+) {
+    val resources = player.resources
+
+    val displayOrder = listOf(
+        TileType.WOOD,
+        TileType.CLAY,
+        TileType.SHEEP,
+        TileType.WHEAT,
+        TileType.ORE
+    )
+
+    Card(
+        colors = CardDefaults.cardColors(),
+        modifier = modifier.padding(top = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            displayOrder.forEach { type ->
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(
+                        painter = painterResource(
+                            id = getResourceImage(type)
+                        ),
+                        contentDescription = type.name,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .pointerInput(type) {
+                                detectTapGestures(
+                                    onDoubleTap = {
+                                        onCheatAttempt(type)
+                                    }
+                                )
+                            }
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = resources[type]?.toString() ?: "0",
+                        color = Color.Black
+                    )
+                }
             }
         }
     }
