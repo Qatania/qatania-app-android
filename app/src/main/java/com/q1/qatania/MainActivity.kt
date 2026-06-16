@@ -16,6 +16,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            //(application as MainApplication).getWebSocketClient().sendMessage(MessageDTO(MessageType.CREATE_LOBBY))
+
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {
                     /*SceneView(
@@ -31,5 +33,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val mainApplication = MainApplication.getInstance();
+        mainApplication.onDestroy()
     }
 }

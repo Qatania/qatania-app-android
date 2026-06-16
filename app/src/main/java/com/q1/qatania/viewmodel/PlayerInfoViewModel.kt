@@ -1,10 +1,9 @@
 package com.q1.qatania.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.q1.qatania.dataRepository.PlayerInfoRepository
+import com.q1.qatania.repository.PlayerInfoRepository
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
 import kotlinx.coroutines.flow.SharingStarted

@@ -20,7 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.q1.qatania.dataRepository.GameBoardRepository
+import com.q1.qatania.MainApplication
+import com.q1.qatania.model.messageDTO.MessageDTO
+import com.q1.qatania.model.messageDTO.MessageType
+import com.q1.qatania.repository.GameBoardRepository
 import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.GameBoardViewModel
 import com.q1.qatania.viewmodel.GameBoardViewModelFactory
@@ -191,6 +194,9 @@ fun GameScene() {
             Button(
                 onClick = {
                     resetCounter++
+                    //TODO: Only for testing, remove again afterwards
+                    MainApplication.getInstance().getWebSocketClient().sendMessage(MessageDTO(
+                        MessageType.GAME_WON))
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)

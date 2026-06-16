@@ -2,13 +2,14 @@ package com.q1.qatania.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.q1.qatania.dataRepository.GameBoardRepository
+import com.q1.qatania.repository.GameBoardRepository
 import kotlinx.coroutines.flow.map
 
 class GameBoardViewModel(
     private val repository: GameBoardRepository
 ) : ViewModel() {
     private val _scalingFactor = 20.0 // trial and error xd
+
     val boardFlow = repository.gameboardFlow().map { receivedBoard ->
         if (receivedBoard.sizeOfHex != 6)
             Log.w(

@@ -1,17 +1,22 @@
-package com.q1.qatania.dataRepository
+package com.q1.qatania.repository
 
+import android.util.Log
 import com.q1.qatania.model.messageDTO.MessageDTO
+import com.q1.qatania.model.messageDTO.MessageType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.jsonParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 
-class PlayerInfoRepository() {
+class PlayerInfoRepository : AbstractRepository() {
+
     fun playerFlow(): Flow<Map<String, PlayerModel>> = flow {
         var temp = 2
-        while(true) {
+        while (true) {
             val message: String = _simulateServerMessage(temp++)
 
             val messageDTO = jsonParser.decodeFromString<MessageDTO>(message)
@@ -67,5 +72,18 @@ class PlayerInfoRepository() {
               "message": {}
             }
         """.trimIndent()
+    }
+
+    override fun handleMessage(messageDTO: MessageDTO) {
+        val type: MessageType = messageDTO.type
+        val message: JsonObject? = messageDTO.message
+
+        if (type == MessageType.CONNECTION_SUCCESSFUL && message != null) {
+            message["playerId"]?.let {
+                val playerId = it.jsonPrimitive.content
+                Log.d("PlayerInfoRepository", "Received player ID: $playerId")
+                //TODO: Do something with player ID, maybe store in view model?
+            }
+        }
     }
 }

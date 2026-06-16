@@ -1,20 +1,20 @@
-package com.q1.qatania.dataRepository
+package com.q1.qatania.repository
 
 import android.content.Context
 import com.q1.qatania.model.gameboard.GameBoardModel
+import com.q1.qatania.model.messageDTO.MessageDTO
 import com.q1.qatania.util.jsonParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.json.Json
 
 
 class GameBoardRepository(
     private val context: Context
-) {
+) : AbstractRepository() {
     fun gameboardFlow(): Flow<GameBoardModel> = flow {
         var i = 0
-        while(true) {
+        while (true) {
             // if message from server with gameboard
             val message: String = _simulateServerMessage(i++)
 
@@ -30,5 +30,17 @@ class GameBoardRepository(
             .bufferedReader()
             .use { it.readText() }
         return json
+    }
+
+    override fun handleMessage(messageDTO: MessageDTO) {
+        /*
+        TODO: Update GameBoard when receiving following message types
+                MessageType.GAME_BOARD_JSON,
+                MessageType.PLACE_SETTLEMENT,
+                MessageType.PLACE_ROAD,
+                MessageType.GAME_STARTED,
+                MessageType.NEXT_TURN,
+                MessageType.UPGRADE_SETTLEMENT
+         */
     }
 }
