@@ -4,6 +4,7 @@ import com.q1.qatania.MainApplication
 import com.q1.qatania.model.messageDTO.MessageDTO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -22,9 +23,9 @@ abstract class AbstractRepository {
             val mainApplication = MainApplication.getInstance()
 
             mainApplication.messageState
+                .filter { it != null }
                 .onEach {
-                    if (it == null) return@onEach
-                    handleMessage(it)
+                    handleMessage(it!!)
                 }
                 .launchIn(this)
         }
