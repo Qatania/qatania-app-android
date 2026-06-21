@@ -1,10 +1,7 @@
-package com.q1.qatania.viewmodel
+package com.q1.qatania.viewmodel.gameboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.q1.qatania.MainApplication
-import com.q1.qatania.model.messageDTO.MessageDTO
-import com.q1.qatania.model.messageDTO.MessageType
 import com.q1.qatania.repository.GameBoardRepository
 
 class GameBoardViewModelFactory(

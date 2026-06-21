@@ -1,7 +1,7 @@
 package com.q1.qatania.ws
 
 import android.util.Log
-import com.q1.qatania.model.messageDTO.MessageDTO
+import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.util.jsonParser
 import okhttp3.OkHttpClient
 import okhttp3.Request

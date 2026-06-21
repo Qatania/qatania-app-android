@@ -1,4 +1,4 @@
-package com.q1.qatania.model.messageDTO
+package com.q1.qatania.model.dto
 
 enum class MessageType {
     //Server Messages
@@ -9,6 +9,7 @@ enum class MessageType {
     LOBBY_UPDATED,
     PLAYER_JOINED,
     LOBBY_CREATED,
+    LOBBY_CLOSED,
     GAME_BOARD_JSON,
     DICE_RESULT,
     GAME_WON,

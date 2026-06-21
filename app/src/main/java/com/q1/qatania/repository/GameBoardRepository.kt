@@ -1,8 +1,8 @@
 package com.q1.qatania.repository
 
 import android.content.Context
+import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.model.gameboard.GameBoardModel
-import com.q1.qatania.model.messageDTO.MessageDTO
 import com.q1.qatania.util.jsonParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

@@ -1,13 +1,11 @@
 package com.q1.qatania.view
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,12 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.q1.qatania.R
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.util.getResourceIcon
-import com.q1.qatania.viewmodel.GameBoardViewModel
-import com.q1.qatania.viewmodel.GameBoardViewModelFactory
 import com.q1.qatania.viewmodel.PlayerInfoViewModel
 
 @Composable

@@ -3,9 +3,9 @@ package com.q1.qatania.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.q1.qatania.repository.PlayerInfoRepository
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
+import com.q1.qatania.repository.PlayerInfoRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -15,7 +15,7 @@ class PlayerInfoViewModel(
     val id: String = "test"
 ) : ViewModel() {
 
-    private val repository = PlayerInfoRepository()
+    private val repository = PlayerInfoRepository.getInstance()
 
     val playersMapFlow = repository.playerFlow()
 

@@ -20,13 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.q1.qatania.MainApplication
-import com.q1.qatania.model.messageDTO.MessageDTO
-import com.q1.qatania.model.messageDTO.MessageType
+import com.q1.qatania.model.dto.MessageDTO
+import com.q1.qatania.model.dto.MessageType
 import com.q1.qatania.repository.GameBoardRepository
 import com.q1.qatania.util.hexToFloat4
-import com.q1.qatania.viewmodel.GameBoardViewModel
-import com.q1.qatania.viewmodel.GameBoardViewModelFactory
+import com.q1.qatania.viewmodel.gameboard.GameBoardViewModel
+import com.q1.qatania.viewmodel.gameboard.GameBoardViewModelFactory
 import com.q1.qatania.viewmodel.PlayerInfoViewModel
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
@@ -40,7 +41,9 @@ import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 
 @Composable
-fun GameScene() {
+fun GameScene(
+    navController: NavController
+) {
     // --- GameboardViewModel ---
     val context = LocalContext.current
     val repository = remember {

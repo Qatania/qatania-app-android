@@ -1,4 +1,4 @@
-package com.q1.qatania.model.messageDTO
+package com.q1.qatania.model.dto
 
 import com.q1.qatania.model.player.PlayerModel
 import kotlinx.serialization.Serializable

@@ -1,4 +1,4 @@
-package com.q1.qatania.viewmodel
+package com.q1.qatania.viewmodel.gameboard
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

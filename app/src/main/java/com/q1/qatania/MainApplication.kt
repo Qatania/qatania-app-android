@@ -2,7 +2,7 @@ package com.q1.qatania
 
 import android.app.Application
 import android.util.Log
-import com.q1.qatania.model.messageDTO.MessageDTO
+import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.ws.WebSocketClient
 import com.q1.qatania.ws.WebSocketListenerImpl
 import kotlinx.coroutines.flow.MutableStateFlow
