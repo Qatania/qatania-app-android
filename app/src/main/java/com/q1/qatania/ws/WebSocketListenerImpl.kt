@@ -8,7 +8,8 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 class WebSocketListenerImpl(
-    val onMessageReceived: (MessageDTO) -> Unit
+    val onMessageReceived: (MessageDTO) -> Unit,
+    val onError: (String) -> Unit
 ) : WebSocketListener() {
 
 
@@ -34,5 +35,6 @@ class WebSocketListenerImpl(
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         Log.e("WebSocketListener", "Connection failure. Response: $response", t)
+        onError("Connecting to server failed")
     }
 }

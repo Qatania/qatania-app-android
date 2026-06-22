@@ -17,6 +17,9 @@ class MainApplication : Application() {
     private val mutableMessageState = MutableStateFlow<MessageDTO?>(null)
     val messageState = mutableMessageState.asStateFlow()
 
+    private val mutableErrorState = MutableStateFlow<String?>(null)
+    val errorState = mutableErrorState.asStateFlow()
+
     companion object {
         @Volatile // Ensure visibility across threads
         private lateinit var instance: MainApplication
@@ -29,13 +32,21 @@ class MainApplication : Application() {
         Log.v("MainApplication", "Created instance")
         Log.v("MainApplication", "Establishing web socket connection...")
         webSocketClient = WebSocketClient(BuildConfig.SERVER_URL)
-        webSocketListener = WebSocketListenerImpl { handleServerMessage(it) }
+        webSocketListener = WebSocketListenerImpl(
+            onMessageReceived = ::handleServerMessage,
+            onError = ::handleErrorMessage
+        )
         webSocketClient.connect(webSocketListener)
     }
 
     private fun handleServerMessage(messageDTO: MessageDTO?) {
         Log.v("MainApplication", "Received latest message from WebSocket: $messageDTO")
         mutableMessageState.update { messageDTO }
+    }
+
+    private fun handleErrorMessage(error: String?) {
+        Log.e("MainApplication", "Received error message from WebSocket: $error")
+        mutableErrorState.update { error }
     }
 
     fun getWebSocketClient(): WebSocketClient {
@@ -45,5 +56,9 @@ class MainApplication : Application() {
 
     fun onDestroy() {
         webSocketClient.close()
+    }
+
+    fun clearErrorState() {
+        mutableErrorState.update { null }
     }
 }

@@ -7,6 +7,8 @@ import com.q1.qatania.model.dto.MessageType
 import com.q1.qatania.model.lobby.LobbyState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class LobbyRepository private constructor() : AbstractRepository() {
 
@@ -32,6 +34,38 @@ class LobbyRepository private constructor() : AbstractRepository() {
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
+    fun setUsername(lobbyId: String, playerId: String, newUsername: String){
+        val message = buildJsonObject {
+            put("username", newUsername)
+        }
+
+        val messageDTO = MessageDTO(
+            type = MessageType.SET_USERNAME,
+            player = playerId,
+            lobbyId = lobbyId,
+            message = message
+        )
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+    }
+
+    fun toggleReady(lobbyId: String, playerId: String){
+        val messageDTO = MessageDTO(
+            type = MessageType.SET_READY,
+            player = playerId,
+            lobbyId = lobbyId,
+        )
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+    }
+
+    fun startGame(lobbyId: String, hostPlayerId: String) {
+        val messageDTO = MessageDTO(
+            type = MessageType.START_GAME,
+            player = hostPlayerId,
+            lobbyId = lobbyId,
+        )
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+    }
+
     override fun handleMessage(messageDTO: MessageDTO) {
         /*
             TODO: Handle lobby messages
@@ -49,6 +83,7 @@ class LobbyRepository private constructor() : AbstractRepository() {
             MessageType.PLAYER_JOINED -> handlePlayerJoined(messageDTO)
             MessageType.LOBBY_UPDATED -> handleLobbyUpdated(messageDTO)
             MessageType.LOBBY_CLOSED -> handleLobbyClosed(messageDTO)
+            MessageType.GAME_STARTED -> handleGameStarted(messageDTO)
             else -> {}
         }
 
@@ -65,7 +100,8 @@ class LobbyRepository private constructor() : AbstractRepository() {
                 return
             }
 
-            _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap())
+            val previousState: LobbyState? = _lobbyFlow.value
+            _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap(), previousState?.gameStarted ?: false)
             Log.d("LobbyRepository", "Joined Lobby $lobbyId")
             return;
         }
@@ -78,14 +114,23 @@ class LobbyRepository private constructor() : AbstractRepository() {
             return
         }
 
-        _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap())
+        val previousState: LobbyState? = _lobbyFlow.value
+        _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap(), previousState?.gameStarted ?: false)
         Log.d("LobbyRepository", "Updated Lobby $lobbyId")
     }
 
     private fun handleLobbyClosed(messageDTO: MessageDTO) {
-        val lobbyId = _lobbyFlow.value;
-        Log.d("LobbyRepository", "Lobby $lobbyId was closed")
+        Log.d("LobbyRepository", "Lobby ${messageDTO.lobbyId} was closed")
         _lobbyFlow.value = null;
+    }
+
+    private fun handleGameStarted(messageDTO: MessageDTO){
+        val lobbyId: String? = messageDTO.lobbyId;
+        if (lobbyId.isNullOrBlank()) {
+            Log.d("LobbyRepository", "Received lobbyId is empty, so skipping")
+            return
+        }
+        _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap(), true)
     }
 
 }

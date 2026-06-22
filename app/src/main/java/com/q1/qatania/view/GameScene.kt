@@ -41,9 +41,7 @@ import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 
 @Composable
-fun GameScene(
-    navController: NavController
-) {
+fun GameScene() {
     // --- GameboardViewModel ---
     val context = LocalContext.current
     val repository = remember {

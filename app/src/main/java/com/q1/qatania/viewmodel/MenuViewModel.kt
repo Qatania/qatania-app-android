@@ -1,5 +1,6 @@
 package com.q1.qatania.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.q1.qatania.model.navigation.NavigationEvent
@@ -26,13 +27,24 @@ class MenuViewModel() : ViewModel() {
     private fun observeLobbyState() {
         viewModelScope.launch {
             lobbyRepository.lobbyState.collect { lobbyState ->
+
+                Log.v("MenuViewModel", "Updated lobbyState: $lobbyState")
                 if (lobbyState?.lobbyId.isNullOrEmpty()) {
                     //Lobby closed
                     _navigationChannel.send(NavigationEvent.ToJoinGameScreen)
-                } else {
-                    //Send player to lobby screen
-                    _navigationChannel.send(NavigationEvent.ToLobbyScreen(lobbyState.lobbyId))
+                    return@collect
                 }
+
+                val hasGameStarted = lobbyState.gameStarted;
+                if (hasGameStarted) {
+                    //Send player to game screen
+                    _navigationChannel.send(NavigationEvent.ToGameScreen(lobbyState.lobbyId))
+                    return@collect
+                }
+
+                //Send player to lobby screen
+                _navigationChannel.send(NavigationEvent.ToLobbyScreen(lobbyState.lobbyId))
+
             }
         }
     }
