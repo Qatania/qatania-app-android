@@ -22,11 +22,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.q1.qatania.model.gameboard.TileType
+import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.getResourceIcon
-import com.q1.qatania.viewmodel.PlayerInfoViewModel
 
 @Composable
-fun ResourceBar(modifier: Modifier, playerInfoViewModel: PlayerInfoViewModel) {
+fun ResourceBar(
+    modifier: Modifier,
+    player: PlayerModel?,
+    onCheatAttempt: (TileType) -> Unit
+) {
     val displayOrder = listOf(
         TileType.WOOD,
         TileType.CLAY,
@@ -35,14 +39,7 @@ fun ResourceBar(modifier: Modifier, playerInfoViewModel: PlayerInfoViewModel) {
         TileType.ORE
     )
 
-    val player = playerInfoViewModel.playerFlow.collectAsState(
-        initial = null
-    )
-    val resources = player.value?.resources
-
-    val onCheatAttempt: (resourceType: TileType) -> Unit = { resourceType ->
-        playerInfoViewModel.cheat(resourceType)
-    }
+    val resources = player?.resources
 
 
     Column(

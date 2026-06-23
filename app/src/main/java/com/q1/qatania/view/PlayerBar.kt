@@ -51,16 +51,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.getResourceImage
-import com.q1.qatania.viewmodel.PlayerInfoViewModel
 
 @Composable
-fun PlayerBar() {
+fun PlayerBar(
+    playersMap: Map<String, PlayerModel>,
+    onCheatAttempt: (TileType) -> Unit
+) {
 
-    val viewModel: PlayerInfoViewModel = viewModel()
     val listState = rememberLazyListState()
-
-    val playersMap = viewModel.playersMapFlow.collectAsState(initial = emptyMap())
-
     var expandedPlayerId by remember { mutableStateOf<String?>(null) }
 
     LazyRow(
@@ -72,7 +70,7 @@ fun PlayerBar() {
         verticalAlignment = Alignment.Top,
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(items = playersMap.value.values.toList()) { player ->
+        items(items = playersMap.values.toList()) { player ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -91,9 +89,7 @@ fun PlayerBar() {
                     PlayerResourcePopup(
                         player = player,
                         modifier = Modifier.width(260.dp),
-                        onCheatAttempt = { tileType ->
-                            viewModel.cheat(tileType)
-                        }
+                        onCheatAttempt = onCheatAttempt
                     )
                 }
             }

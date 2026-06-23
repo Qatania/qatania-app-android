@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.q1.qatania.model.lobby.LobbyState
+import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.repository.LobbyRepository
 import com.q1.qatania.repository.PlayerInfoRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +19,7 @@ class LobbyViewModel : ViewModel() {
 
     val lobbyState: StateFlow<LobbyState?> = lobbyRepository.lobbyState.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = null
     )
 
@@ -27,8 +28,12 @@ class LobbyViewModel : ViewModel() {
     }
 
     fun isCurrentPlayerHost(): Boolean {
+        return getPlayerInfo()?.isHost ?: false
+    }
+
+    fun getPlayerInfo(): PlayerModel? {
         val playerId: String = playerInfoRepository.getPlayerId()
-        return lobbyState.value?.players[playerId]?.isHost ?: false
+        return lobbyState.value?.players[playerId]
     }
 
     fun setUsername(newUsername: String){

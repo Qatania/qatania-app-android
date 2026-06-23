@@ -34,7 +34,7 @@ class LobbyRepository private constructor() : AbstractRepository() {
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
-    fun setUsername(lobbyId: String, playerId: String, newUsername: String){
+    fun setUsername(lobbyId: String, playerId: String, newUsername: String) {
         val message = buildJsonObject {
             put("username", newUsername)
         }
@@ -48,7 +48,7 @@ class LobbyRepository private constructor() : AbstractRepository() {
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
-    fun toggleReady(lobbyId: String, playerId: String){
+    fun toggleReady(lobbyId: String, playerId: String) {
         val messageDTO = MessageDTO(
             type = MessageType.SET_READY,
             player = playerId,
@@ -83,12 +83,17 @@ class LobbyRepository private constructor() : AbstractRepository() {
             MessageType.PLAYER_JOINED -> handlePlayerJoined(messageDTO)
             MessageType.LOBBY_UPDATED -> handleLobbyUpdated(messageDTO)
             MessageType.LOBBY_CLOSED -> handleLobbyClosed(messageDTO)
-            MessageType.GAME_STARTED -> handleGameStarted(messageDTO)
+            MessageType.GAME_STARTED,
+            MessageType.GAME_BOARD_JSON,
+            MessageType.PLACE_SETTLEMENT,
+            MessageType.PLACE_ROAD,
+            MessageType.NEXT_TURN,
+            MessageType.UPGRADE_SETTLEMENT -> handlePlayerResourceUpdate(messageDTO)
+
             else -> {}
         }
 
     }
-
 
     private fun handlePlayerJoined(messageDTO: MessageDTO) {
         if (_lobbyFlow.value == null) {
@@ -101,7 +106,11 @@ class LobbyRepository private constructor() : AbstractRepository() {
             }
 
             val previousState: LobbyState? = _lobbyFlow.value
-            _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap(), previousState?.gameStarted ?: false)
+            _lobbyFlow.value = LobbyState(
+                lobbyId,
+                messageDTO.players ?: emptyMap(),
+                previousState?.gameStarted ?: false
+            )
             Log.d("LobbyRepository", "Joined Lobby $lobbyId")
             return;
         }
@@ -115,7 +124,11 @@ class LobbyRepository private constructor() : AbstractRepository() {
         }
 
         val previousState: LobbyState? = _lobbyFlow.value
-        _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap(), previousState?.gameStarted ?: false)
+        _lobbyFlow.value = LobbyState(
+            lobbyId,
+            messageDTO.players ?: emptyMap(),
+            previousState?.gameStarted ?: false
+        )
         Log.d("LobbyRepository", "Updated Lobby $lobbyId")
     }
 
@@ -124,12 +137,13 @@ class LobbyRepository private constructor() : AbstractRepository() {
         _lobbyFlow.value = null;
     }
 
-    private fun handleGameStarted(messageDTO: MessageDTO){
+    private fun handlePlayerResourceUpdate(messageDTO: MessageDTO) {
         val lobbyId: String? = messageDTO.lobbyId;
         if (lobbyId.isNullOrBlank()) {
             Log.d("LobbyRepository", "Received lobbyId is empty, so skipping")
             return
         }
+
         _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap(), true)
     }
 

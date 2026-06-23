@@ -1,46 +1,59 @@
 package com.q1.qatania.repository
 
-import android.content.Context
+import android.util.Log
 import com.q1.qatania.model.dto.MessageDTO
+import com.q1.qatania.model.dto.MessageType
 import com.q1.qatania.model.gameboard.GameBoardModel
 import com.q1.qatania.util.jsonParser
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 
-class GameBoardRepository(
-    private val context: Context
-) : AbstractRepository() {
-    fun gameboardFlow(): Flow<GameBoardModel> = flow {
-        var i = 0
-        while (true) {
-            // if message from server with gameboard
-            val message: String = _simulateServerMessage(i++)
+class GameBoardRepository() : AbstractRepository() {
 
-            emit(jsonParser.decodeFromString(message))
-            delay(10000)
-        }
-    }
+    private val _gameboardFlow = MutableStateFlow<GameBoardModel?>(null)
+    val gameboardState = _gameboardFlow.asStateFlow()
 
-    private fun _simulateServerMessage(i: Int): String {
-        val name = if (i % 2 == 0 || true) "exampleboard.json" else "secondBoard.json"
-        val json = context.assets
-            .open(name)
-            .bufferedReader()
-            .use { it.readText() }
-        return json
+    companion object {
+        @Volatile
+        private var INSTANCE: GameBoardRepository? = null
+        fun getInstance(): GameBoardRepository =
+            //Ensure thread safety
+            INSTANCE ?: synchronized(this) {
+                INSTANCE ?: GameBoardRepository().also { INSTANCE = it }
+            }
     }
 
     override fun handleMessage(messageDTO: MessageDTO) {
-        /*
-        TODO: Update GameBoard when receiving following message types
-                MessageType.GAME_BOARD_JSON,
-                MessageType.PLACE_SETTLEMENT,
-                MessageType.PLACE_ROAD,
-                MessageType.GAME_STARTED,
-                MessageType.NEXT_TURN,
-                MessageType.UPGRADE_SETTLEMENT
-         */
+        when (messageDTO.type) {
+            MessageType.GAME_BOARD_JSON,
+            MessageType.PLACE_SETTLEMENT,
+            MessageType.PLACE_ROAD,
+            MessageType.GAME_STARTED,
+            MessageType.NEXT_TURN,
+            MessageType.UPGRADE_SETTLEMENT -> handleGameboardUpdate(messageDTO)
+
+            else -> {}
+        }
     }
+
+    private fun handleGameboardUpdate(messageDTO: MessageDTO) {
+        val message = messageDTO.message ?: run {
+            Log.e("GameBoardRepository", "Message is null")
+            return
+        }
+
+        if (!message.containsKey("gameboard")) {
+            Log.e("GameBoardRepository", "Message is missing gameboard")
+            return;
+        }
+
+        val gameboardJsonString = jsonParser.encodeToString(message["gameboard"])
+        val gameboard: GameBoardModel =
+            jsonParser.decodeFromString<GameBoardModel>(gameboardJsonString)
+        _gameboardFlow.update { gameboard }
+    }
+
+
 }

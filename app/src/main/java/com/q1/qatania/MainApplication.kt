@@ -5,20 +5,25 @@ import android.util.Log
 import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.ws.WebSocketClient
 import com.q1.qatania.ws.WebSocketListenerImpl
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 
 class MainApplication : Application() {
+
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private lateinit var webSocketClient: WebSocketClient
     private lateinit var webSocketListener: WebSocketListenerImpl
 
-    private val mutableMessageState = MutableStateFlow<MessageDTO?>(null)
-    val messageState = mutableMessageState.asStateFlow()
+    private val mutableMessageFlow = MutableSharedFlow<MessageDTO?>()
+    val messageFlow: SharedFlow<MessageDTO?> = mutableMessageFlow
 
-    private val mutableErrorState = MutableStateFlow<String?>(null)
-    val errorState = mutableErrorState.asStateFlow()
+    private val mutableErrorFlow = MutableSharedFlow<String?>()
+    val errorFlow: SharedFlow<String?> = mutableErrorFlow
 
     companion object {
         @Volatile // Ensure visibility across threads
@@ -41,12 +46,17 @@ class MainApplication : Application() {
 
     private fun handleServerMessage(messageDTO: MessageDTO?) {
         Log.v("MainApplication", "Received latest message from WebSocket: $messageDTO")
-        mutableMessageState.update { messageDTO }
+        applicationScope.launch {
+            mutableMessageFlow.emit(messageDTO)
+        }
     }
 
     private fun handleErrorMessage(error: String?) {
         Log.e("MainApplication", "Received error message from WebSocket: $error")
-        mutableErrorState.update { error }
+        applicationScope.launch {
+            mutableErrorFlow.emit(error)
+        }
+
     }
 
     fun getWebSocketClient(): WebSocketClient {
@@ -59,6 +69,8 @@ class MainApplication : Application() {
     }
 
     fun clearErrorState() {
-        mutableErrorState.update { null }
+        applicationScope.launch {
+            mutableErrorFlow.emit(null)
+        }
     }
 }

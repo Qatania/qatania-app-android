@@ -22,7 +22,7 @@ abstract class AbstractRepository {
         scope.launch {
             val mainApplication = MainApplication.getInstance()
 
-            mainApplication.messageState
+            mainApplication.messageFlow
                 .filterNotNull()
                 .onEach {
                     handleMessage(it)

@@ -1,19 +1,27 @@
-package com.q1.qatania.viewmodel.gameboard
+package com.q1.qatania.viewmodel.game
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.q1.qatania.model.gameboard.GameBoardModel
 import com.q1.qatania.repository.GameBoardRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GameBoardViewModel(
-    private val repository: GameBoardRepository
-) : ViewModel() {
+class GameBoardViewModel() : ViewModel() {
     private val _scalingFactor = 20.0 // trial and error xd
 
-    val boardFlow = repository.gameboardFlow().map { receivedBoard ->
+    private val gameBoardRepository = GameBoardRepository.getInstance()
+
+    val boardFlow: Flow<GameBoardModel?> = gameBoardRepository.gameboardState.map { receivedBoard ->
+
+        if(receivedBoard == null){
+            Log.d("GameBoardViewModel", "Received gameboard was null")
+            return@map null
+        }
+
         if (receivedBoard.sizeOfHex != 6)
             Log.w(
-                "Gameboard",
+                "GameBoardViewModel",
                 "Received Board has a size of Hex of ${receivedBoard.sizeOfHex} and not 6, which means the Positioning of the tiles might be wrong."
             )
         

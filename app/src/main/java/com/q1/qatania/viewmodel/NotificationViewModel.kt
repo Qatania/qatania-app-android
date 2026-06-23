@@ -27,13 +27,14 @@ class NotificationViewModel() : ViewModel() {
         viewModelScope.launch {
             notificationRepository.notificationState.filterNotNull().collect {
                 _notificationChannel.send(it)
+                notificationRepository.clearNotificationState()
             }
         }
     }
 
     private fun observeWebSocketState() {
         viewModelScope.launch {
-            MainApplication.getInstance().errorState.filterNotNull().collect {
+            MainApplication.getInstance().errorFlow.filterNotNull().collect {
                 _notificationChannel.send(Notification(it, NotificationType.ERROR))
                 //Clear error state after emitting
                 MainApplication.getInstance().clearErrorState()

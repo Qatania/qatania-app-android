@@ -9,26 +9,26 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.q1.qatania.MainApplication
 import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.model.dto.MessageType
-import com.q1.qatania.repository.GameBoardRepository
+import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.hexToFloat4
-import com.q1.qatania.viewmodel.gameboard.GameBoardViewModel
-import com.q1.qatania.viewmodel.gameboard.GameBoardViewModelFactory
-import com.q1.qatania.viewmodel.PlayerInfoViewModel
+import com.q1.qatania.viewmodel.game.GameBoardViewModel
+import com.q1.qatania.viewmodel.game.GameViewModel
+import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
 import io.github.sceneview.gesture.CameraGestureDetector
@@ -41,27 +41,18 @@ import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 
 @Composable
-fun GameScene() {
+fun GameScene(
+    gameBoardViewModel: GameBoardViewModel = viewModel(),
+    lobbyViewModel: LobbyViewModel = viewModel(),
+    gameViewModel: GameViewModel = viewModel()
+) {
     // --- GameboardViewModel ---
-    val context = LocalContext.current
-    val repository = remember {
-        GameBoardRepository(context.applicationContext)
-    }
-    val gameBoardViewModel: GameBoardViewModel =
-        viewModel(factory = GameBoardViewModelFactory(repository))
-    val currentGameBoard = gameBoardViewModel.boardFlow.collectAsState(
-        initial = null
-    )
+    val gameBoard by gameBoardViewModel.boardFlow.collectAsState(initial = null)
+    val lobbyState by lobbyViewModel.lobbyState.collectAsState(initial = null)
 
-    val gameBoard = currentGameBoard.value
     val tiles = gameBoard?.tiles
     val settlementPositions = gameBoard?.settlementPositions
     val roads = gameBoard?.roads
-    // ---
-
-    // --- PlayerInfoViewModel---
-    val playerInfoViewModel: PlayerInfoViewModel = viewModel()
-
     // ---
 
     // --- 3D Model ---
@@ -92,11 +83,14 @@ fun GameScene() {
 
     Scaffold(
         topBar = {
-            PlayerBar()
+            PlayerBar(
+                playersMap = lobbyState?.players ?: emptyMap(),
+                onCheatAttempt = { gameViewModel.cheat(lobbyState!!.lobbyId, it) }
+            )
         }
-    ) { padding ->
+    ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
             SceneView(
                 modifier = Modifier.fillMaxSize(),
@@ -208,7 +202,8 @@ fun GameScene() {
 
             ResourceBar(
                 modifier = Modifier.align(Alignment.TopStart),
-                playerInfoViewModel = playerInfoViewModel
+                player = lobbyViewModel.getPlayerInfo(),
+                onCheatAttempt = { gameViewModel.cheat(lobbyState!!.lobbyId, it) }
             )
         }
     }

@@ -33,23 +33,27 @@ class NotificationRepository : AbstractRepository() {
 
     private fun handleAlertMessage(messageDTO: MessageDTO) {
         val message = messageDTO.message
-       if(message != null && message.containsKey("message") && message.containsKey("severity")){
-           val text = message["message"]?.toString()
-           val severity = message["severity"]?.toString()
-           val type: NotificationType = when(severity) {
+        if (message != null && message.containsKey("message") && message.containsKey("severity")) {
+            val text = message["message"]?.toString()
+            val severity = message["severity"]?.toString()
+            val type: NotificationType = when (severity) {
                 "success" -> NotificationType.SUCCESS
-               "error" -> NotificationType.ERROR
-               else -> NotificationType.INFO
-           }
-           _notificationFlow.value = Notification("$text", type)
-       }
+                "error" -> NotificationType.ERROR
+                else -> NotificationType.INFO
+            }
+            _notificationFlow.value = Notification("$text", type)
+        }
     }
 
     private fun handleErrorMessage(messageDTO: MessageDTO) {
         val message = messageDTO.message
-        if(message != null && message.containsKey("error")){
+        if (message != null && message.containsKey("error")) {
             val text = message["error"]?.toString()
             _notificationFlow.value = Notification("$text", NotificationType.ERROR)
         }
+    }
+
+    fun clearNotificationState() {
+        _notificationFlow.value = null
     }
 }
