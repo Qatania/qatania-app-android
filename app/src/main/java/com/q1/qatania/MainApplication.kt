@@ -3,6 +3,9 @@ package com.q1.qatania
 import android.app.Application
 import android.util.Log
 import com.q1.qatania.model.dto.MessageDTO
+import com.q1.qatania.repository.GameBoardRepository
+import com.q1.qatania.repository.NotificationRepository
+import com.q1.qatania.repository.PlayerInfoRepository
 import com.q1.qatania.ws.WebSocketClient
 import com.q1.qatania.ws.WebSocketListenerImpl
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +37,11 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        Log.v("MainApplication", "Created instance")
+        Log.v("MainApplication", "Created instance, initializing repositories")
+        NotificationRepository.getInstance()
+        PlayerInfoRepository.getInstance()
+        GameBoardRepository.getInstance()
+
         Log.v("MainApplication", "Establishing web socket connection...")
         webSocketClient = WebSocketClient(BuildConfig.SERVER_URL)
         webSocketListener = WebSocketListenerImpl(

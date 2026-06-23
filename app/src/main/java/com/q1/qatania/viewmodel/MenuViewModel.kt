@@ -19,7 +19,6 @@ class MenuViewModel() : ViewModel() {
     private val _navigationChannel = Channel<NavigationEvent>(Channel.BUFFERED)
     val navigationEvents = _navigationChannel.receiveAsFlow()
 
-
     init {
         observeLobbyState()
     }
@@ -29,6 +28,7 @@ class MenuViewModel() : ViewModel() {
             lobbyRepository.lobbyState.collect { lobbyState ->
 
                 Log.v("MenuViewModel", "Updated lobbyState: $lobbyState")
+
                 if (lobbyState?.lobbyId.isNullOrEmpty()) {
                     //Lobby closed
                     _navigationChannel.send(NavigationEvent.ToJoinGameScreen)

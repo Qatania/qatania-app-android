@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 
-class GameBoardRepository() : AbstractRepository() {
+class GameBoardRepository : AbstractRepository() {
 
     private val _gameboardFlow = MutableStateFlow<GameBoardModel?>(null)
     val gameboardState = _gameboardFlow.asStateFlow()
@@ -26,6 +26,7 @@ class GameBoardRepository() : AbstractRepository() {
     }
 
     override fun handleMessage(messageDTO: MessageDTO) {
+        Log.v("GameBoardRepository", "Received $messageDTO")
         when (messageDTO.type) {
             MessageType.GAME_BOARD_JSON,
             MessageType.PLACE_SETTLEMENT,
@@ -52,6 +53,7 @@ class GameBoardRepository() : AbstractRepository() {
         val gameboardJsonString = jsonParser.encodeToString(message["gameboard"])
         val gameboard: GameBoardModel =
             jsonParser.decodeFromString<GameBoardModel>(gameboardJsonString)
+        Log.v("GameBoardRepository", "Updating gameboard with $gameboard")
         _gameboardFlow.update { gameboard }
     }
 

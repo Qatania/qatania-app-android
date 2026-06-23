@@ -24,7 +24,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.q1.qatania.model.navigation.NavigationEvent
 import com.q1.qatania.model.notification.ColoredSnackbarVisuals
-import com.q1.qatania.model.notification.NotificationType
 import com.q1.qatania.view.GameScene
 import com.q1.qatania.view.JoinGameScreen
 import com.q1.qatania.view.lobby.LobbyScreen
@@ -44,11 +43,19 @@ class MainActivity : ComponentActivity() {
             //Collect navigation events
             LaunchedEffect("navigation") {
                 menuViewModel.navigationEvents.collect { event ->
-                    when (event) {
-                        is NavigationEvent.ToLobbyScreen -> navController.navigate("lobby/${event.lobbyId}")
-                        is NavigationEvent.ToJoinGameScreen -> navController.navigate("join")
-                        is NavigationEvent.ToGameScreen -> navController.navigate("game/${event.lobbyId}")
+                    val route: String = when (event) {
+                        is NavigationEvent.ToLobbyScreen -> "lobby/${event.lobbyId}"
+                        is NavigationEvent.ToJoinGameScreen -> "join"
+                        is NavigationEvent.ToGameScreen -> "game/${event.lobbyId}"
                     }
+
+                    if (navController.currentDestination?.route == route) {
+                        Log.v("MainActivity", "Received duplicated navigation event, skipping")
+                        return@collect
+                    }
+
+                    Log.v("MainActivity", "Navigating to $route")
+                    navController.navigate(route)
                 }
 
             }
@@ -106,8 +113,6 @@ class MainActivity : ComponentActivity() {
                                 navArgument("lobbyId") { type = NavType.StringType },
                             )
                         ) { backStackEntry ->
-                            val lobbyId: String? = backStackEntry.arguments?.getString("lobbyId")
-                            Log.d("MainActivity", "Navigated to lobby screen in lobby $lobbyId")
                             LobbyScreen()
                         }
 
@@ -118,8 +123,6 @@ class MainActivity : ComponentActivity() {
                                 navArgument("lobbyId") { type = NavType.StringType },
                             )
                         ) { backStackEntry ->
-                            val lobbyId: String? = backStackEntry.arguments?.getString("lobbyId")
-                            Log.d("MainActivity", "Navigated to game screen in lobby $lobbyId")
                             GameScene()
                         }
                     }
