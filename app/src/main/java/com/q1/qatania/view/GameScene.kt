@@ -25,9 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.q1.qatania.MainApplication
-import com.q1.qatania.model.dto.MessageDTO
-import com.q1.qatania.model.dto.MessageType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.game.GameBoardViewModel
@@ -37,6 +34,7 @@ import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
 import io.github.sceneview.gesture.CameraGestureDetector
 import io.github.sceneview.material.setBaseColorFactor
+import io.github.sceneview.math.Position
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
@@ -157,6 +155,13 @@ fun GameScene(
                 }
 
                 settlementPositions?.forEach { settlementPosition ->
+
+                    val position = Float3(
+                        settlementPosition.coordinates[0].toFloat(),
+                        0.05f,
+                        settlementPosition.coordinates[1].toFloat()
+                    )
+
                     if (settlementPosition.building != null) {
                         rememberModelInstance(
                             modelLoader,
@@ -171,17 +176,42 @@ fun GameScene(
                                 modelInstance = modelInstance,
                                 scaleToUnits = 0.1f,
                                 autoAnimate = true,
-                                position = Float3(
-                                    settlementPosition.coordinates[0].toFloat(),
-                                    0.05f,
-                                    settlementPosition.coordinates[1].toFloat()
-                                ),
+                                position = position,
                             )
                         }
+                    } else {
+                        SphereNode(
+                            radius = 0.1f,
+                            position = position,
+                            apply = {
+                                isTouchable = true
+                                onSingleTapConfirmed = {
+                                    gameViewModel.handleSettlementTap(lobbyId, settlementPosition)
+                                    true; //-> Means tap event is consumed and should not be propagated
+                                }
+                            }
+                        )
                     }
                 }
 
                 roads?.forEach { road ->
+
+                    val roadPosition = Float3(
+                        road.coordinates[0].toFloat(),
+                        0.05f,
+                        road.coordinates[1].toFloat()
+                    )
+
+                    val roadRotation = Float3(
+                        0f,
+                        //-60f,
+                        (Math.toDegrees(road.rotationAngle).toFloat() - 90) * 2,
+                        // 90 -> 0 || 270 -> 180 // ==> -90 (+90)
+                        // 150 -> 120 || -30 -> -60 // ==> -30 (+150)
+                        // 30 -> -120 || -150 -> -300 // ==> -150 (+30)
+                        0f
+                    )
+
                     if (road.owner != null) {
                         rememberModelInstance(
                             modelLoader,
@@ -196,22 +226,23 @@ fun GameScene(
                                 modelInstance = modelInstance,
                                 scaleToUnits = 0.1f,
                                 autoAnimate = true,
-                                position = Float3(
-                                    road.coordinates[0].toFloat(),
-                                    0.05f,
-                                    road.coordinates[1].toFloat()
-                                ),
-                                rotation = Float3(
-                                    0f,
-                                    //-60f,
-                                    (Math.toDegrees(road.rotationAngle).toFloat() - 90) * 2,
-                                    // 90 -> 0 || 270 -> 180 // ==> -90 (+90)
-                                    // 150 -> 120 || -30 -> -60 // ==> -30 (+150)
-                                    // 30 -> -120 || -150 -> -300 // ==> -150 (+30)
-                                    0f
-                                )
+                                position = roadPosition,
+                                rotation = roadRotation
                             )
                         }
+                    } else {
+                        CubeNode(
+                            size = Position(0.1f, 0.1f, 0.3f),
+                            position = roadPosition,
+                            rotation = roadRotation,
+                            apply = {
+                                isTouchable = true
+                                onSingleTapConfirmed = {
+                                    gameViewModel.handleRoadTap(lobbyId, road)
+                                    true; //-> Means tap event is consumed and should not be propagated
+                                }
+                            }
+                        )
                     }
                 }
                 /*LightNode(
