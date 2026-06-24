@@ -9,6 +9,7 @@ import com.q1.qatania.repository.LobbyRepository
 import com.q1.qatania.repository.PlayerInfoRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class LobbyViewModel : ViewModel() {
@@ -23,23 +24,18 @@ class LobbyViewModel : ViewModel() {
         initialValue = null
     )
 
-    fun isCurrentPlayer(playerId: String): Boolean {
-        return playerId == playerInfoRepository.getPlayerId()
-    }
+    val playerState: StateFlow<PlayerModel?> = lobbyRepository.lobbyState.map {
+        it?.players[playerInfoRepository.getPlayerId()]
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
 
-    fun isCurrentPlayerHost(): Boolean {
-        return getPlayerInfo()?.isHost ?: false
-    }
-
-    fun getPlayerInfo(): PlayerModel? {
-        val playerId: String = playerInfoRepository.getPlayerId()
-        return lobbyState.value?.players[playerId]
-    }
-
-    fun setUsername(newUsername: String){
+    fun setUsername(newUsername: String) {
         val lobbyId: String? = lobbyState.value?.lobbyId;
 
-        if(lobbyId.isNullOrBlank()){
+        if (lobbyId.isNullOrBlank()) {
             Log.e("LobbyViewModel", "Cannot update username, lobbyId is null");
             return;
         }
@@ -51,10 +47,10 @@ class LobbyViewModel : ViewModel() {
         )
     }
 
-    fun toggleReady(){
+    fun toggleReady() {
         val lobbyId: String? = lobbyState.value?.lobbyId;
 
-        if(lobbyId.isNullOrBlank()){
+        if (lobbyId.isNullOrBlank()) {
             Log.e("LobbyViewModel", "Cannot set ready, lobbyId is null");
             return;
         }
@@ -65,10 +61,10 @@ class LobbyViewModel : ViewModel() {
         )
     }
 
-    fun startGame(){
+    fun startGame() {
         val lobbyId: String? = lobbyState.value?.lobbyId;
 
-        if(lobbyId.isNullOrBlank()){
+        if (lobbyId.isNullOrBlank()) {
             Log.e("LobbyViewModel", "Cannot set ready, lobbyId is null");
             return;
         }

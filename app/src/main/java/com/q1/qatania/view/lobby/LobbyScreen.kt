@@ -35,6 +35,7 @@ fun LobbyScreen(
     viewModel: LobbyViewModel = viewModel(),
 ) {
     val lobbyState by viewModel.lobbyState.collectAsStateWithLifecycle()
+    val playerState by viewModel.playerState.collectAsStateWithLifecycle()
     val players: List<PlayerModel> = lobbyState?.players?.values?.toList() ?: listOf()
 
     Column(
@@ -64,7 +65,7 @@ fun LobbyScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (viewModel.isCurrentPlayerHost()) {
+        if (playerState?.isHost == true) {
             val allPlayersReady: Boolean = players.size > 1 && players.all { it.isReady }
 
             Button(
@@ -96,8 +97,8 @@ fun LobbyScreen(
             ) { player ->
                 PlayerListItem(
                     player = player,
-                    isPlayer = viewModel.isCurrentPlayer(player.id),
-                    onChangeUsername = { username -> viewModel.setUsername(username) },
+                    isPlayer = playerState?.id == player.id,
+                    onChangeUsername = { viewModel.setUsername(it) },
                     onToggleReadyClick = { viewModel.toggleReady() }
                 )
             }

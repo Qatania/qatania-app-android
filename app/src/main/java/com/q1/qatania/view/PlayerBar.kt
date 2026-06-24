@@ -33,7 +33,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,14 +46,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.getResourceImage
 
 @Composable
 fun PlayerBar(
-    playersMap: Map<String, PlayerModel>,
+    players: Map<String, PlayerModel>,
     onCheatAttempt: (TileType) -> Unit
 ) {
 
@@ -70,7 +68,7 @@ fun PlayerBar(
         verticalAlignment = Alignment.Top,
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(items = playersMap.values.toList()) { player ->
+        items(items = players.values.toList()) { player ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

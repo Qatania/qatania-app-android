@@ -5,17 +5,21 @@ import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.DoubleArrow
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,8 +51,12 @@ fun GameScene(
     gameViewModel: GameViewModel = viewModel()
 ) {
     // --- GameboardViewModel ---
-    val gameBoard by gameBoardViewModel.boardFlow.collectAsState(initial = null)
+    val gameBoard by gameBoardViewModel.gameboardState.collectAsState(initial = null)
     val lobbyState by lobbyViewModel.lobbyState.collectAsState(initial = null)
+    val playerState by lobbyViewModel.playerState.collectAsState(initial = null)
+
+    val players: Map<String, PlayerModel> = lobbyState?.players ?: emptyMap()
+    val lobbyId: String = lobbyState?.lobbyId ?: ""
 
     val tiles = gameBoard?.tiles
     val settlementPositions = gameBoard?.settlementPositions
@@ -84,13 +92,43 @@ fun GameScene(
     Scaffold(
         topBar = {
             PlayerBar(
-                playersMap = lobbyState?.players ?: emptyMap(),
-                onCheatAttempt = { gameViewModel.cheat(lobbyState!!.lobbyId, it) }
+                players = players,
+                onCheatAttempt = { gameViewModel.cheat(lobbyId, it) }
             )
+        },
+        floatingActionButton = {
+            if (playerState?.isActivePlayer == true) {
+                if (playerState?.isSetupRound == false && playerState?.canRollDice == true) {
+                    FloatingActionButton(
+                        onClick = { gameViewModel.rollDice(lobbyId) },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Casino,
+                            contentDescription = "Roll dice"
+                        )
+                    }
+                } else {
+                    FloatingActionButton(
+                        onClick = { gameViewModel.handleEndTurnClick(lobbyId) },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.DoubleArrow,
+                            contentDescription = "End turn"
+                        )
+                    }
+                }
+
+            }
         }
     ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             SceneView(
                 modifier = Modifier.fillMaxSize(),
@@ -190,8 +228,11 @@ fun GameScene(
                 onClick = {
                     resetCounter++
                     //TODO: Only for testing, remove again afterwards
-                    MainApplication.getInstance().getWebSocketClient().sendMessage(MessageDTO(
-                        MessageType.GAME_WON))
+                    MainApplication.getInstance().getWebSocketClient().sendMessage(
+                        MessageDTO(
+                            MessageType.GAME_WON
+                        )
+                    )
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -202,8 +243,8 @@ fun GameScene(
 
             ResourceBar(
                 modifier = Modifier.align(Alignment.TopStart),
-                player = lobbyViewModel.getPlayerInfo(),
-                onCheatAttempt = { gameViewModel.cheat(lobbyState!!.lobbyId, it) }
+                player = playerState,
+                onCheatAttempt = { gameViewModel.cheat(lobbyId, it) }
             )
         }
     }
