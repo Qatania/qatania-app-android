@@ -227,12 +227,6 @@ fun GameScene(
             Button(
                 onClick = {
                     resetCounter++
-                    //TODO: Only for testing, remove again afterwards
-                    MainApplication.getInstance().getWebSocketClient().sendMessage(
-                        MessageDTO(
-                            MessageType.GAME_WON
-                        )
-                    )
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
