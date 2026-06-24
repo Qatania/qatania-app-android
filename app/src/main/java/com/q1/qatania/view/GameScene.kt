@@ -169,12 +169,16 @@ fun GameScene(
                         )?.let { modelInstance ->
 
                             modelInstance.materialInstances.forEach { materialInstance ->
-                                materialInstance.setBaseColorFactor(hexToFloat4(settlementPosition.building.color))
+                                materialInstance.setBaseColorFactor(
+                                    hexToFloat4(
+                                        settlementPosition.building.color
+                                    )
+                                )
                             }
 
                             ModelNode(
                                 modelInstance = modelInstance,
-                                scaleToUnits = 0.1f,
+                                scaleToUnits = 0.3f,
                                 autoAnimate = true,
                                 position = position,
                             )
@@ -185,8 +189,12 @@ fun GameScene(
                             position = position,
                             apply = {
                                 isTouchable = true
+                                isHittable = true
                                 onSingleTapConfirmed = {
-                                    gameViewModel.handleSettlementTap(lobbyId, settlementPosition)
+                                    gameViewModel.handleSettlementTap(
+                                        lobbyId,
+                                        settlementPosition
+                                    )
                                     true; //-> Means tap event is consumed and should not be propagated
                                 }
                             }
@@ -224,7 +232,7 @@ fun GameScene(
 
                             ModelNode(
                                 modelInstance = modelInstance,
-                                scaleToUnits = 0.1f,
+                                scaleToUnits = 0.4f,
                                 autoAnimate = true,
                                 position = roadPosition,
                                 rotation = roadRotation
@@ -232,11 +240,12 @@ fun GameScene(
                         }
                     } else {
                         CubeNode(
-                            size = Position(0.1f, 0.1f, 0.3f),
+                            size = Position(0.2f, 0.2f, 0.4f),
                             position = roadPosition,
                             rotation = roadRotation,
                             apply = {
                                 isTouchable = true
+                                isHittable = true
                                 onSingleTapConfirmed = {
                                     gameViewModel.handleRoadTap(lobbyId, road)
                                     true; //-> Means tap event is consumed and should not be propagated
