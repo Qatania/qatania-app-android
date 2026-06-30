@@ -9,13 +9,17 @@ import com.q1.qatania.model.gameboard.BuildingType
 import com.q1.qatania.model.gameboard.Road
 import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.TileType
+import com.q1.qatania.repository.GameRepository
+import com.q1.qatania.repository.GameRepository.DiceState
 import com.q1.qatania.repository.PlayerInfoRepository
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 class GameViewModel : ViewModel() {
 
     val playerInfoRepository = PlayerInfoRepository.getInstance()
+    val gameRepository = GameRepository.getInstance()
 
     fun cheat(lobbyId: String, tileType: TileType) {
         Log.d("GameViewModel", "Cheating attempt with tile type $tileType")
@@ -88,4 +92,9 @@ class GameViewModel : ViewModel() {
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
+
+    val diceState: StateFlow<DiceState?> = gameRepository.diceFlow
+    fun clearDiceState() {
+        gameRepository.clearDiceState()
+    }
 }
