@@ -2,7 +2,9 @@ package com.q1.qatania.view
 
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -19,7 +21,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,6 +74,7 @@ fun GameScene(
     val targetPos = Float3(0f, 0f, 0f)
 
     var resetCounter by remember { mutableIntStateOf(0) }
+    var buildModeActivated: Boolean by rememberSaveable { mutableStateOf(false) };
 
     val cameraManipulator = key(resetCounter) {
         rememberCameraManipulator(
@@ -183,7 +188,7 @@ fun GameScene(
                                 position = position,
                             )
                         }
-                    } else {
+                    } else if (buildModeActivated) {
                         SphereNode(
                             radius = 0.1f,
                             position = position.apply {
@@ -240,7 +245,7 @@ fun GameScene(
                                 rotation = roadRotation
                             )
                         }
-                    } else {
+                    } else if (buildModeActivated) {
                         CubeNode(
                             size = Position(0.1f, 0.1f, 0.4f),
                             position = roadPosition.apply { y = 0.2f },
@@ -265,17 +270,31 @@ fun GameScene(
             )*/
             }
 
-            // Reset Button
-            Button(
-                onClick = {
-                    resetCounter++
-                },
+            Column(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
                     .padding(16.dp)
+                    .align(Alignment.TopEnd),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Reset")
+                // Reset Button
+                Button(
+                    onClick = {
+                        resetCounter++
+                    }
+                ) {
+                    Text("Reset")
+                }
+
+                // Reset Button
+                Button(
+                    onClick = {
+                        buildModeActivated = !buildModeActivated
+                    }
+                ) {
+                    Text("Toggle Build Mode")
+                }
             }
+
 
             ResourceBar(
                 modifier = Modifier.align(Alignment.TopStart),
