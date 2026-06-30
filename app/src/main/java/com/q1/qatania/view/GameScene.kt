@@ -60,6 +60,8 @@ fun GameScene(
     val players: Map<String, PlayerModel> = lobbyState?.players ?: emptyMap()
     val lobbyId: String = lobbyState?.lobbyId ?: ""
 
+
+    val buildModeYOffset: Float = 0.5f
     val tiles = gameBoard?.tiles
     val settlementPositions = gameBoard?.settlementPositions
     val roads = gameBoard?.roads
@@ -144,17 +146,22 @@ fun GameScene(
                     "GameScene",
                     "Spawning Board"
                 )
+
+
                 tiles?.forEach { tile ->
+
+                    val tilePosition = Float3(
+                        tile.coordinates[0].toFloat(),
+                        0f,
+                        tile.coordinates[1].toFloat()
+                    )
+
                     rememberModelInstance(modelLoader, tile.type.path)?.let {
                         ModelNode(
                             modelInstance = it,
                             scaleToUnits = 1.0f,
                             autoAnimate = true,
-                            position = Float3(
-                                tile.coordinates[0].toFloat(),
-                                0f,
-                                tile.coordinates[1].toFloat()
-                            )
+                            position = tilePosition
                         )
                     }
                 }
@@ -192,7 +199,7 @@ fun GameScene(
                         SphereNode(
                             radius = 0.1f,
                             position = position.apply {
-                                y = 0.2f
+                                y = buildModeYOffset
                             },
                             apply = {
                                 isTouchable = true
@@ -248,7 +255,7 @@ fun GameScene(
                     } else if (buildModeActivated) {
                         CubeNode(
                             size = Position(0.1f, 0.1f, 0.4f),
-                            position = roadPosition.apply { y = 0.2f },
+                            position = roadPosition.apply { y = buildModeYOffset },
                             rotation = roadRotation,
                             apply = {
                                 isTouchable = true
