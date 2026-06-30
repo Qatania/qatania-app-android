@@ -186,7 +186,9 @@ fun GameScene(
                     } else {
                         SphereNode(
                             radius = 0.1f,
-                            position = position,
+                            position = position.apply {
+                                y = 0.2f
+                            },
                             apply = {
                                 isTouchable = true
                                 isHittable = true
@@ -240,8 +242,8 @@ fun GameScene(
                         }
                     } else {
                         CubeNode(
-                            size = Position(0.2f, 0.2f, 0.4f),
-                            position = roadPosition,
+                            size = Position(0.1f, 0.1f, 0.4f),
+                            position = roadPosition.apply { y = 0.2f },
                             rotation = roadRotation,
                             apply = {
                                 isTouchable = true

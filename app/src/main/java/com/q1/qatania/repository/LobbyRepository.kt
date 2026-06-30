@@ -88,6 +88,8 @@ class LobbyRepository private constructor() : AbstractRepository() {
             MessageType.PLACE_SETTLEMENT,
             MessageType.PLACE_ROAD,
             MessageType.NEXT_TURN,
+            MessageType.DICE_RESULT,
+            MessageType.PLAYER_RESOURCE_UPDATE,
             MessageType.UPGRADE_SETTLEMENT -> handlePlayerResourceUpdate(messageDTO)
 
             else -> {}
