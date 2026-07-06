@@ -4,8 +4,13 @@ import android.util.Log
 import com.q1.qatania.MainApplication
 import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.model.dto.MessageType
+import com.q1.qatania.model.gameboard.GameBoardModel
+import com.q1.qatania.model.lobby.LobbyInfo
 import com.q1.qatania.model.lobby.LobbyState
+import com.q1.qatania.util.jsonParser
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -14,6 +19,9 @@ class LobbyRepository private constructor() : AbstractRepository() {
 
     private val _lobbyFlow = MutableStateFlow<LobbyState?>(null);
     val lobbyState = _lobbyFlow.asStateFlow()
+
+    private val _lobbiesFlow = MutableStateFlow<List<LobbyInfo>>(emptyList())
+    val lobbiesState = _lobbiesFlow.asStateFlow()
 
     companion object {
         @Volatile
@@ -30,6 +38,14 @@ class LobbyRepository private constructor() : AbstractRepository() {
             type = MessageType.JOIN_LOBBY,
             player = playerId,
             lobbyId = lobbyId
+        )
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+    }
+
+    fun createLobby(playerId: String) {
+        val messageDTO = MessageDTO(
+            type = MessageType.CREATE_LOBBY,
+            player = playerId,
         )
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
@@ -66,20 +82,19 @@ class LobbyRepository private constructor() : AbstractRepository() {
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
+    fun getLobbies(playerId: String) {
+        val messageDTO = MessageDTO(
+            type = MessageType.GET_LOBBIES,
+            player = playerId
+        )
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+    }
+
     override fun handleMessage(messageDTO: MessageDTO) {
-        /*
-            TODO: Handle lobby messages
-                * LOBBY_CREATED
-                * SET_READY
-                * LOBBY_LIST
-                * PLAYER_JOINED
-                * LOBBY_UPDATED
-                * LOBBY_CLOSED
-                * GAME_STARTED
-         */
         val type = messageDTO.type;
 
         when (type) {
+            MessageType.LOBBY_CREATED,
             MessageType.PLAYER_JOINED -> handlePlayerJoined(messageDTO)
             MessageType.LOBBY_UPDATED -> handleLobbyUpdated(messageDTO)
             MessageType.LOBBY_CLOSED -> handleLobbyClosed(messageDTO)
@@ -91,10 +106,29 @@ class LobbyRepository private constructor() : AbstractRepository() {
             MessageType.DICE_RESULT,
             MessageType.PLAYER_RESOURCE_UPDATE,
             MessageType.UPGRADE_SETTLEMENT -> handlePlayerResourceUpdate(messageDTO)
+            MessageType.LOBBY_LIST -> handleLobbyList(messageDTO)
 
             else -> {}
         }
 
+    }
+
+    private fun handleLobbyList(messageDTO: MessageDTO) {
+        val message = messageDTO.message ?: run {
+            Log.e("LobbyRepository", "Message is null")
+            return
+        }
+
+        if (!message.containsKey("lobbies")) {
+            Log.e("LobbyRepository", "Message is missing lobbies list")
+            return;
+        }
+
+        val lobbyListJsonString = jsonParser.encodeToString(message["lobbies"])
+        val lobbiesList: List<LobbyInfo> =
+            jsonParser.decodeFromString<List<LobbyInfo>>(lobbyListJsonString)
+
+        _lobbiesFlow.value = lobbiesList
     }
 
     private fun handlePlayerJoined(messageDTO: MessageDTO) {

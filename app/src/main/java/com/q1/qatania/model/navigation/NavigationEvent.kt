@@ -6,6 +6,8 @@ sealed interface NavigationEvent {
     data class ToLobbyScreen(val lobbyId: String) : NavigationEvent
     data class ToGameScreen(val lobbyId: String) : NavigationEvent
     data object ToJoinGameScreen : NavigationEvent
+    data object ToStartScreen: NavigationEvent
+    data object ToLobbyBrowseScreen: NavigationEvent
 
 
 }
