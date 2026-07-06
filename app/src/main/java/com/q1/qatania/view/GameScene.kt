@@ -34,6 +34,7 @@ import com.q1.qatania.model.gameboard.Road
 import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.Tile
 import com.q1.qatania.model.player.PlayerModel
+import com.q1.qatania.util.ShakeDetector
 import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.game.GameBoardViewModel
 import com.q1.qatania.viewmodel.game.GameViewModel
@@ -133,6 +134,13 @@ fun GameScene(
                             contentDescription = "Roll dice"
                         )
                     }
+
+                    ShakeDetector {
+                        if (!showDicePopup) {
+                            gameViewModel.rollDice(lobbyId)
+                        }
+                    }
+
                 } else {
                     FloatingActionButton(
                         onClick = { gameViewModel.handleEndTurnClick(lobbyId) },
