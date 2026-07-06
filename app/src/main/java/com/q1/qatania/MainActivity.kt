@@ -13,7 +13,10 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,6 +44,7 @@ class MainActivity : ComponentActivity() {
             val notificationViewModel: NotificationViewModel = viewModel()
 
             //Collect navigation events
+            var lastNavigatedRoute by remember { mutableStateOf<String?>(null) }
             LaunchedEffect("navigation") {
                 menuViewModel.navigationEvents.collect { event ->
                     val route: String = when (event) {
@@ -49,11 +53,12 @@ class MainActivity : ComponentActivity() {
                         is NavigationEvent.ToGameScreen -> "game/${event.lobbyId}"
                     }
 
-                    if (navController.currentDestination?.route == route) {
+                    if (route == lastNavigatedRoute) {
                         Log.v("MainActivity", "Received duplicated navigation event, skipping")
                         return@collect
                     }
 
+                    lastNavigatedRoute = route
                     Log.v("MainActivity", "Navigating to $route")
                     navController.navigate(route)
                 }

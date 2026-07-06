@@ -30,14 +30,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.q1.qatania.model.gameboard.Road
+import com.q1.qatania.model.gameboard.SettlementPosition
+import com.q1.qatania.model.gameboard.Tile
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.game.GameBoardViewModel
 import com.q1.qatania.viewmodel.game.GameViewModel
 import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 import dev.romainguy.kotlin.math.Float3
+import io.github.sceneview.SceneScope
 import io.github.sceneview.SceneView
 import io.github.sceneview.gesture.CameraGestureDetector
+import io.github.sceneview.loaders.ModelLoader
 import io.github.sceneview.material.setBaseColorFactor
 import io.github.sceneview.math.Position
 import io.github.sceneview.rememberCameraManipulator
@@ -63,7 +68,7 @@ fun GameScene(
     val lobbyId: String = lobbyState?.lobbyId ?: ""
 
 
-    val buildModeYOffset: Float = 0.5f
+    val buildModeYOffset = 0.5f
     val tiles = gameBoard?.tiles
     val settlementPositions = gameBoard?.settlementPositions
     val roads = gameBoard?.roads
@@ -153,7 +158,8 @@ fun GameScene(
                 modifier = Modifier.fillMaxSize(),
                 engine = engine,
                 cameraNode = cameraNode,
-                cameraManipulator = cameraManipulator
+                cameraManipulator = cameraManipulator,
+                autoCenterContent = false //prevent re-centering and therefore re-creation of the gameboard
 
             ) {
                 Log.d(
@@ -163,132 +169,36 @@ fun GameScene(
 
 
                 tiles?.forEach { tile ->
-
-                    val tilePosition = Float3(
-                        tile.coordinates[0].toFloat(),
-                        0f,
-                        tile.coordinates[1].toFloat()
-                    )
-
-                    rememberModelInstance(modelLoader, tile.type.path)?.let {
-                        ModelNode(
-                            modelInstance = it,
-                            scaleToUnits = 1.0f,
-                            autoAnimate = true,
-                            position = tilePosition
-                        )
+                    key(tile.id) {
+                        TileNode(tile, modelLoader)
                     }
                 }
 
                 settlementPositions?.forEach { settlementPosition ->
-
-                    val position = Float3(
-                        settlementPosition.coordinates[0].toFloat(),
-                        0.05f,
-                        settlementPosition.coordinates[1].toFloat()
-                    )
-
-                    if (settlementPosition.building != null) {
-                        rememberModelInstance(
-                            modelLoader,
-                            settlementPosition.building.type.path
-                        )?.let { modelInstance ->
-
-                            modelInstance.materialInstances.forEach { materialInstance ->
-                                materialInstance.setBaseColorFactor(
-                                    hexToFloat4(
-                                        settlementPosition.building.color
-                                    )
-                                )
-                            }
-
-                            ModelNode(
-                                modelInstance = modelInstance,
-                                scaleToUnits = 0.3f,
-                                autoAnimate = true,
-                                position = position,
-                            )
-                        }
-                    } else if (buildModeActivated) {
-                        SphereNode(
-                            radius = 0.1f,
-                            position = position.apply {
-                                y = buildModeYOffset
-                            },
-                            apply = {
-                                isTouchable = true
-                                isHittable = true
-                                onSingleTapConfirmed = {
-                                    gameViewModel.handleSettlementTap(
-                                        lobbyId,
-                                        settlementPosition
-                                    )
-                                    true; //-> Means tap event is consumed and should not be propagated
-                                }
-                            }
+                    key(settlementPosition.id) {
+                        SettlementPositionNode(
+                            settlementPosition = settlementPosition,
+                            modelLoader = modelLoader,
+                            buildModeActivated = buildModeActivated,
+                            buildModeYOffset = buildModeYOffset,
+                            lobbyId = lobbyId,
+                            gameViewModel = gameViewModel
                         )
                     }
                 }
 
                 roads?.forEach { road ->
-
-                    val roadPosition = Float3(
-                        road.coordinates[0].toFloat(),
-                        0.05f,
-                        road.coordinates[1].toFloat()
-                    )
-
-                    val roadRotation = Float3(
-                        0f,
-                        //-60f,
-                        (Math.toDegrees(road.rotationAngle).toFloat() - 90) * 2,
-                        // 90 -> 0 || 270 -> 180 // ==> -90 (+90)
-                        // 150 -> 120 || -30 -> -60 // ==> -30 (+150)
-                        // 30 -> -120 || -150 -> -300 // ==> -150 (+30)
-                        0f
-                    )
-
-                    if (road.owner != null) {
-                        rememberModelInstance(
-                            modelLoader,
-                            "models/road.glb"
-                        )?.let { modelInstance ->
-
-                            modelInstance.materialInstances.forEach { materialInstance ->
-                                materialInstance.setBaseColorFactor(hexToFloat4(road.color))
-                            }
-
-                            ModelNode(
-                                modelInstance = modelInstance,
-                                scaleToUnits = 0.4f,
-                                autoAnimate = true,
-                                position = roadPosition,
-                                rotation = roadRotation
-                            )
-                        }
-                    } else if (buildModeActivated) {
-                        CubeNode(
-                            size = Position(0.1f, 0.1f, 0.4f),
-                            position = roadPosition.apply { y = buildModeYOffset },
-                            rotation = roadRotation,
-                            apply = {
-                                isTouchable = true
-                                isHittable = true
-                                onSingleTapConfirmed = {
-                                    gameViewModel.handleRoadTap(lobbyId, road)
-                                    true; //-> Means tap event is consumed and should not be propagated
-                                }
-                            }
+                    key(road.id) {
+                        RoadNode(
+                            road = road,
+                            modelLoader = modelLoader,
+                            buildModeActivated = buildModeActivated,
+                            buildModeYOffset = buildModeYOffset,
+                            lobbyId = lobbyId,
+                            gameViewModel = gameViewModel
                         )
                     }
                 }
-                /*LightNode(
-                type = LightManager.Type.POINT,
-                intensity = 100_000f,
-                color = io.github.sceneview.math.Color(1f, 0.95f, 0.9f),
-                direction = io.github.sceneview.math.Direction(0f, -1f, 0f),
-                position = io.github.sceneview.math.Position(0f, 5f, 0f)
-            )*/
             }
 
             Column(
@@ -330,5 +240,140 @@ fun GameScene(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SceneScope.RoadNode(
+    road: Road,
+    modelLoader: ModelLoader,
+    buildModeActivated: Boolean,
+    buildModeYOffset: Float,
+    lobbyId: String,
+    gameViewModel: GameViewModel
+) {
+    val roadPosition = Float3(
+        road.coordinates[0].toFloat(),
+        0.05f,
+        road.coordinates[1].toFloat()
+    )
+
+    val roadRotation = Float3(
+        0f,
+        //-60f,
+        (Math.toDegrees(road.rotationAngle).toFloat() - 90) * 2,
+        // 90 -> 0 || 270 -> 180 // ==> -90 (+90)
+        // 150 -> 120 || -30 -> -60 // ==> -30 (+150)
+        // 30 -> -120 || -150 -> -300 // ==> -150 (+30)
+        0f
+    )
+
+    if (road.owner != null) {
+        rememberModelInstance(
+            modelLoader,
+            "models/road.glb"
+        )?.let { modelInstance ->
+
+            modelInstance.materialInstances.forEach { materialInstance ->
+                materialInstance.setBaseColorFactor(hexToFloat4(road.color))
+            }
+
+            ModelNode(
+                modelInstance = modelInstance,
+                scaleToUnits = 0.4f,
+                autoAnimate = true,
+                position = roadPosition,
+                rotation = roadRotation
+            )
+        }
+    } else if (buildModeActivated) {
+        CubeNode(
+            size = Position(0.1f, 0.1f, 0.4f),
+            position = roadPosition.apply { y = buildModeYOffset },
+            rotation = roadRotation,
+            apply = {
+                isTouchable = true
+                isHittable = true
+                onSingleTapConfirmed = {
+                    gameViewModel.handleRoadTap(lobbyId, road)
+                    true; //-> Means tap event is consumed and should not be propagated
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun SceneScope.SettlementPositionNode(
+    settlementPosition: SettlementPosition,
+    modelLoader: ModelLoader,
+    buildModeActivated: Boolean,
+    buildModeYOffset: Float,
+    lobbyId: String,
+    gameViewModel: GameViewModel
+) {
+    val position = Float3(
+        settlementPosition.coordinates[0].toFloat(),
+        0.05f,
+        settlementPosition.coordinates[1].toFloat()
+    )
+
+    if (settlementPosition.building != null) {
+        rememberModelInstance(
+            modelLoader,
+            settlementPosition.building.type.path
+        )?.let { modelInstance ->
+
+            modelInstance.materialInstances.forEach { materialInstance ->
+                materialInstance.setBaseColorFactor(
+                    hexToFloat4(
+                        settlementPosition.building.color
+                    )
+                )
+            }
+
+            ModelNode(
+                modelInstance = modelInstance,
+                scaleToUnits = 0.3f,
+                autoAnimate = true,
+                position = position,
+            )
+        }
+    } else if (buildModeActivated) {
+        SphereNode(
+            radius = 0.1f,
+            position = position.apply {
+                y = buildModeYOffset
+            },
+            apply = {
+                isTouchable = true
+                isHittable = true
+                onSingleTapConfirmed = {
+                    gameViewModel.handleSettlementTap(
+                        lobbyId,
+                        settlementPosition
+                    )
+                    true; //-> Means tap event is consumed and should not be propagated
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun SceneScope.TileNode(tile: Tile, modelLoader: ModelLoader) {
+    val tilePosition = Float3(
+        tile.coordinates[0].toFloat(),
+        0f,
+        tile.coordinates[1].toFloat()
+    )
+
+    rememberModelInstance(modelLoader, tile.type.path)?.let {
+        ModelNode(
+            modelInstance = it,
+            scaleToUnits = 1.0f,
+            autoAnimate = true,
+            position = tilePosition
+        )
     }
 }
