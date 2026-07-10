@@ -45,7 +45,6 @@ fun LobbyScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
         Text(
             text = "Lobby ID: ${lobbyState?.lobbyId}",
             style = MaterialTheme.typography.titleLarge.copy(fontSize = 32.sp),
@@ -82,6 +81,8 @@ fun LobbyScreen(
             ) {
                 Text(text = "Start Game")
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         //Show player info
