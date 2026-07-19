@@ -20,6 +20,7 @@ class GameViewModel : ViewModel() {
 
     val playerInfoRepository = PlayerInfoRepository.getInstance()
     val gameRepository = GameRepository.getInstance()
+    val self = playerInfoRepository.getPlayerId()
 
     fun cheat(lobbyId: String, tileType: TileType) {
         Log.d("GameViewModel", "Cheating attempt with tile type $tileType")
@@ -30,8 +31,24 @@ class GameViewModel : ViewModel() {
         val messageDTO = MessageDTO(
             type = MessageType.CHEAT_ATTEMPT,
             lobbyId = lobbyId,
-            player = playerInfoRepository.getPlayerId(),
+            player = self,
             message = message
+        )
+
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+    }
+
+    fun report(lobbyId: String, playerToId: String) {
+        val playerFromId = self
+        Log.d("GameViewModel", "$playerFromId is reporting $playerToId")
+
+        val messageDTO = MessageDTO(
+            type = MessageType.REPORT_PLAYER,
+            player = playerFromId,
+            lobbyId = lobbyId,
+            message = buildJsonObject {
+                put("reportedId", playerToId)
+            }
         )
 
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
@@ -41,7 +58,7 @@ class GameViewModel : ViewModel() {
         val messageDTO = MessageDTO(
             type = MessageType.ROLL_DICE,
             lobbyId = lobbyId,
-            player = playerInfoRepository.getPlayerId(),
+            player = self,
         )
 
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
@@ -51,7 +68,7 @@ class GameViewModel : ViewModel() {
         val messageDTO = MessageDTO(
             type = MessageType.END_TURN,
             lobbyId = lobbyId,
-            player = playerInfoRepository.getPlayerId(),
+            player = self,
         )
 
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
@@ -63,7 +80,7 @@ class GameViewModel : ViewModel() {
         val messageDTO = MessageDTO(
             type = MessageType.PLACE_ROAD,
             lobbyId = lobbyId,
-            player = playerInfoRepository.getPlayerId(),
+            player = self,
             message = message
         )
 
@@ -85,7 +102,7 @@ class GameViewModel : ViewModel() {
         val messageDTO = MessageDTO(
             type = type,
             lobbyId = lobbyId,
-            player = playerInfoRepository.getPlayerId(),
+            player = self,
             message = message
         )
 

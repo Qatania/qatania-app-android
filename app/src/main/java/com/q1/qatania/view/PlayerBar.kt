@@ -27,10 +27,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Report
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,7 +55,9 @@ import com.q1.qatania.util.getResourceImage
 @Composable
 fun PlayerBar(
     players: Map<String, PlayerModel>,
-    onCheatAttempt: (TileType) -> Unit
+    self: String,
+    onCheatAttempt: (TileType) -> Unit,
+    onReport: (String) -> Unit
 ) {
 
     val listState = rememberLazyListState()
@@ -86,8 +90,10 @@ fun PlayerBar(
                 ) {
                     PlayerResourcePopup(
                         player = player,
+                        self = self,
                         modifier = Modifier.width(260.dp),
-                        onCheatAttempt = onCheatAttempt
+                        onCheatAttempt = onCheatAttempt,
+                        onReport = onReport
                     )
                 }
             }
@@ -168,8 +174,10 @@ fun PlayerCard(
 @Composable
 fun PlayerResourcePopup(
     player: PlayerModel,
+    self: String,
     modifier: Modifier = Modifier,
-    onCheatAttempt: (TileType) -> Unit
+    onCheatAttempt: (TileType) -> Unit,
+    onReport: (String) -> Unit
 ) {
     val resources = player.resources
 
@@ -214,6 +222,21 @@ fun PlayerResourcePopup(
                         text = resources[type]?.toString() ?: "0",
                         color = Color.Black
                     )
+                }
+            }
+            if (player.id != self) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    IconButton(
+                        onClick = {
+                            onReport(player.id)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Report,
+                            contentDescription = "Report",
+                            tint = Color.Red
+                        )
+                    }
                 }
             }
         }

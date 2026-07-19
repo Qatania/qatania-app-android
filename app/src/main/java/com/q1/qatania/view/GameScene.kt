@@ -67,6 +67,7 @@ fun GameScene(
 
     val players: Map<String, PlayerModel> = lobbyState?.players ?: emptyMap()
     val lobbyId: String = lobbyState?.lobbyId ?: ""
+    val self: String = gameViewModel.self
 
 
     val buildModeYOffset = 0.5f
@@ -118,7 +119,9 @@ fun GameScene(
         topBar = {
             PlayerBar(
                 players = players,
-                onCheatAttempt = { gameViewModel.cheat(lobbyId, it) }
+                self = self,
+                onCheatAttempt = { gameViewModel.cheat(lobbyId, it) },
+                onReport = { gameViewModel.report(lobbyId, it) }
             )
         },
         floatingActionButton = {
