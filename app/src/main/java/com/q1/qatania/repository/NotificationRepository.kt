@@ -12,6 +12,8 @@ class NotificationRepository : AbstractRepository() {
     private val _notificationFlow = MutableStateFlow<Notification?>(null);
     val notificationState = _notificationFlow.asStateFlow()
 
+    val playerInfoRepository = PlayerInfoRepository.getInstance()
+
     companion object {
         @Volatile
         private var INSTANCE: NotificationRepository? = null
@@ -36,9 +38,13 @@ class NotificationRepository : AbstractRepository() {
         val players = messageDTO.players ?: emptyMap();
         val nextPlayer = players.values.filter({ it.isActivePlayer })
         if (nextPlayer.isNotEmpty()) {
-            val username = nextPlayer[0].username;
-            val text = "It's player $username's turn"
-            _notificationFlow.value = Notification(text, NotificationType.INFO)
+            nextPlayer[0].let {
+                val isCurrentPlayer = playerInfoRepository.getPlayerId() == it.id
+                val playerName = if (isCurrentPlayer) "your" else "player ${it.username}'s";
+                val text = "It's $playerName turn"
+                _notificationFlow.value = Notification(text, NotificationType.INFO)
+            }
+
         }
     }
 
