@@ -13,6 +13,8 @@ val catanBlue = Color(0xFF177FDE)
 val catanRessourceBar = Color(0xFF652B06)
 val success = Color(0xFF008000)
 val catanAmber = Color(0xFFD6A250)
+val darkOrange = Color(0xFFCC5500)
+val darkBlue = Color(0xFF1E3A8A)
 
 
 

@@ -3,6 +3,8 @@ package com.q1.qatania.model.notification
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.ui.graphics.Color
+import com.q1.qatania.theme.darkBlue
+import com.q1.qatania.theme.darkOrange
 
 class ColoredSnackbarVisuals(
     override val message: String,
@@ -16,7 +18,7 @@ class ColoredSnackbarVisuals(
         get() = when (type) {
             NotificationType.SUCCESS -> Color.Green
             NotificationType.ERROR -> Color.Red
-            NotificationType.INFO -> Color.Yellow
-            NotificationType.ALERT -> Color.Blue
+            NotificationType.INFO -> darkBlue
+            NotificationType.ALERT -> darkOrange
         }
 }

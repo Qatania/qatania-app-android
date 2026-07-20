@@ -25,9 +25,20 @@ class NotificationRepository : AbstractRepository() {
 
     override fun handleMessage(messageDTO: MessageDTO) {
         when (messageDTO.type) {
+            MessageType.NEXT_TURN -> handleNextTurnMessage(messageDTO)
             MessageType.ERROR -> handleErrorMessage(messageDTO)
             MessageType.ALERT -> handleAlertMessage(messageDTO)
             else -> {}
+        }
+    }
+
+    private fun handleNextTurnMessage(messageDTO: MessageDTO) {
+        val players = messageDTO.players ?: emptyMap();
+        val nextPlayer = players.values.filter({ it.isActivePlayer })
+        if (nextPlayer.isNotEmpty()) {
+            val username = nextPlayer[0].username;
+            val text = "It's player $username's turn"
+            _notificationFlow.value = Notification(text, NotificationType.INFO)
         }
     }
 
