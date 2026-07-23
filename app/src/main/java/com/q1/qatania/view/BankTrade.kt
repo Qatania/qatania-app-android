@@ -1,20 +1,28 @@
 package com.q1.qatania.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -58,88 +66,105 @@ fun BankTrade(
     }
 
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
         modifier = Modifier
-            .fillMaxWidth(0.5f)
-            .background(Color.Gray),
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onCancel() },
+        contentAlignment = Alignment.Center
     ) {
-        Text("Trade with Bank", style = MaterialTheme.typography.headlineSmall, color = Color.White)
-        Spacer(Modifier.height(16.dp))
-        Column(
+        Card(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .fillMaxWidth(0.85f)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { /* consume taps so they don't fall through to the scrim behind */ },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Top
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(20.dp)
             ) {
+                Text("Trade with Bank", style = MaterialTheme.typography.headlineSmall)
+                Spacer(Modifier.height(16.dp))
                 Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        "You Give",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White
-                    )
-                    resourceOrder.forEach { resource ->
-                        ResourceSelector(
-                            resource = resource,
-                            count = tradeOffer.first.getOrDefault(resource, 0),
-                            current = null,
-                            onIncrement = { onUpdateOffer(resource, 1) },
-                            onDecrement = { onUpdateOffer(resource, -1) }
-                        )
-                    }
-                }
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "Trade to",
-                    tint = Color.White,
                     modifier = Modifier
-                        .size(48.dp)
-                        .padding(horizontal = 8.dp, vertical = 48.dp)
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .heightIn(max = 400.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Text(
-                        "You Get (You have)",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White
-                    )
-                    resourceOrder.forEach { resource ->
-                        ResourceSelector(
-                            resource = resource,
-                            count = tradeOffer.second.getOrDefault(resource, 0),
-                            current = player?.resources?.getOrDefault(resource, 0),
-                            onIncrement = { onUpdateTarget(resource, 1) },
-                            onDecrement = { onUpdateTarget(resource, -1) }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                "You Give",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            resourceOrder.forEach { resource ->
+                                ResourceSelector(
+                                    resource = resource,
+                                    count = tradeOffer.first.getOrDefault(resource, 0),
+                                    current = null,
+                                    onIncrement = { onUpdateOffer(resource, 1) },
+                                    onDecrement = { onUpdateOffer(resource, -1) }
+                                )
+                            }
+                        }
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Trade to",
+                            modifier = Modifier
+                                .size(48.dp)
+                                .padding(horizontal = 8.dp, vertical = 48.dp)
                         )
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                "You Get (You have)",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            resourceOrder.forEach { resource ->
+                                ResourceSelector(
+                                    resource = resource,
+                                    count = tradeOffer.second.getOrDefault(resource, 0),
+                                    current = player?.resources?.getOrDefault(resource, 0),
+                                    onIncrement = { onUpdateTarget(resource, 1) },
+                                    onDecrement = { onUpdateTarget(resource, -1) }
+                                )
+                            }
+                        }
                     }
                 }
-            }
+                Spacer(Modifier.height(16.dp))
 
-        }
-        Spacer(Modifier.height(16.dp))
-
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(onClick = { onCancel(); tradeOffer = Pair(emptyMap(), emptyMap()) }) {
-                Text("Back", color = Color.White)
-            }
-            Button(onClick = { onSubmit(tradeOffer); tradeOffer = Pair(emptyMap(), emptyMap())}, enabled = validTrade) {
-                Text("Confirm Trade", color = Color.White)
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = { onCancel(); tradeOffer = Pair(emptyMap(), emptyMap()) }) {
+                        Text("Back")
+                    }
+                    Button(onClick = { onSubmit(tradeOffer); tradeOffer = Pair(emptyMap(), emptyMap())}, enabled = validTrade) {
+                        Text("Confirm Trade")
+                    }
+                }
             }
         }
     }
