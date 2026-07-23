@@ -13,7 +13,10 @@ import com.q1.qatania.repository.GameRepository
 import com.q1.qatania.repository.GameRepository.DiceState
 import com.q1.qatania.repository.PlayerInfoRepository
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 
 class GameViewModel : ViewModel() {
@@ -113,5 +116,17 @@ class GameViewModel : ViewModel() {
     val diceState: StateFlow<DiceState?> = gameRepository.diceFlow
     fun clearDiceState() {
         gameRepository.clearDiceState()
+    }
+
+    fun submitBankTrade(tradeRequest: Pair<Map<TileType, Int>, Map<TileType, Int>>, lobbyId: String){
+        val message = Json.encodeToJsonElement(tradeRequest).jsonObject
+
+        val messageDTO = MessageDTO(
+            type = MessageType.TRADE_WITH_BANK,
+            lobbyId = lobbyId,
+            player = self,
+            message = message
+        )
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 }

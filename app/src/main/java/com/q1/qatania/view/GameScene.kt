@@ -78,6 +78,8 @@ fun GameScene(
     val diceState by gameViewModel.diceState.collectAsState()
     var showDicePopup by remember { mutableStateOf(false) }
 
+    var showBankTradePopup by remember {mutableStateOf(false)}
+
     LaunchedEffect(diceState) {
         if (diceState != null) {
             showDicePopup = true
@@ -235,6 +237,14 @@ fun GameScene(
                 ) {
                     Text("Toggle Build Mode")
                 }
+
+                Button(
+                    onClick = {
+                        showBankTradePopup = true
+                    }
+                ) {
+                    Text("Trading ")
+                }
             }
 
 
@@ -248,6 +258,14 @@ fun GameScene(
                 DiceResultPopup(
                     diceState = diceState!!,
                     onDismiss = { showDicePopup = false; gameViewModel.clearDiceState() }
+                )
+            }
+
+            if (showBankTradePopup) {
+                BankTrade(
+                    player = players[self],
+                    onSubmit = {tradeOffer -> gameViewModel.submitBankTrade(tradeOffer, lobbyId); showBankTradePopup = false },
+                    onCancel = { showBankTradePopup = false }
                 )
             }
         }
