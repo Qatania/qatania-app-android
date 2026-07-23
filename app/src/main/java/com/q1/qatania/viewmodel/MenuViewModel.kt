@@ -94,4 +94,10 @@ class MenuViewModel() : ViewModel() {
             _navigationChannel.send(NavigationEvent.ToLobbyBrowseScreen)
         }
     }
+
+    fun returnToMenu() {
+        viewModelScope.launch {
+            _navigationChannel.send(NavigationEvent.ToStartScreen)
+        }
+    }
 }

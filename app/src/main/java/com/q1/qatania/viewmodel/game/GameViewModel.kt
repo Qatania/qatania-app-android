@@ -118,6 +118,11 @@ class GameViewModel : ViewModel() {
         gameRepository.clearDiceState()
     }
 
+    val gameEndState: StateFlow<GameRepository.GameEndState?> = gameRepository.gameEndFlow
+    fun clearGameEndState() {
+        gameRepository.clearGameEndState()
+    }
+
     fun submitBankTrade(tradeRequest: Pair<Map<TileType, Int>, Map<TileType, Int>>, lobbyId: String){
         val message = buildJsonObject {
             put("offeredResources", Json.encodeToJsonElement(tradeRequest.first))

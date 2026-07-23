@@ -58,7 +58,8 @@ import kotlinx.coroutines.delay
 fun GameScene(
     gameBoardViewModel: GameBoardViewModel = viewModel(),
     lobbyViewModel: LobbyViewModel = viewModel(),
-    gameViewModel: GameViewModel = viewModel()
+    gameViewModel: GameViewModel = viewModel(),
+    onReturnToMenu: () -> Unit = {}
 ) {
     // --- GameboardViewModel ---
     val gameBoard by gameBoardViewModel.gameboardState.collectAsState(initial = null)
@@ -79,6 +80,8 @@ fun GameScene(
     var showDicePopup by remember { mutableStateOf(false) }
 
     var showBankTradePopup by remember {mutableStateOf(false)}
+
+    val gameEndState by gameViewModel.gameEndState.collectAsState()
 
     LaunchedEffect(diceState) {
         if (diceState != null) {
@@ -266,6 +269,17 @@ fun GameScene(
                     player = players[self],
                     onSubmit = {tradeOffer -> gameViewModel.submitBankTrade(tradeOffer, lobbyId); showBankTradePopup = false },
                     onCancel = { showBankTradePopup = false }
+                )
+            }
+
+            if (gameEndState != null) {
+                GameEndScreen(
+                    selfId = self,
+                    gameEndState = gameEndState!!,
+                    onReturnToMenu = {
+                        gameViewModel.clearGameEndState()
+                        onReturnToMenu()
+                    }
                 )
             }
         }

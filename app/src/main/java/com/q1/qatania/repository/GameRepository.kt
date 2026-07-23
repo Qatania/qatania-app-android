@@ -3,6 +3,7 @@ package com.q1.qatania.repository
 import android.util.Log
 import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.model.dto.MessageType
+import com.q1.qatania.model.player.PlayerModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.contentOrNull
@@ -14,10 +15,18 @@ class GameRepository private constructor() : AbstractRepository() {
     private val _diceFlow = MutableStateFlow<DiceState?>(null);
     val diceFlow = _diceFlow.asStateFlow()
 
+    private val _gameEndFlow = MutableStateFlow<GameEndState?>(null)
+    val gameEndFlow = _gameEndFlow.asStateFlow()
+
     data class DiceState(
         val rollingPlayerUsername: String?,
         val dice1: Int = 1,
         val dice2: Int = 1,
+    )
+
+    data class GameEndState(
+        val winnerId: String?,
+        val leaderboard: List<PlayerModel>,
     )
 
     companion object {
@@ -45,6 +54,7 @@ class GameRepository private constructor() : AbstractRepository() {
 
         when (type) {
             MessageType.DICE_RESULT -> handleDiceResult(messageDTO)
+            MessageType.GAME_WON -> handleGameWon(messageDTO)
 
             else -> {}
         }
@@ -70,6 +80,21 @@ class GameRepository private constructor() : AbstractRepository() {
 
     fun clearDiceState() {
         _diceFlow.value = null
+    }
+
+    private fun handleGameWon(messageDTO: MessageDTO) {
+        val leaderboard = messageDTO.players?.values?.sortedByDescending { it.victoryPoints } ?: emptyList()
+
+        Log.d("GameRepository", "Game won by ${messageDTO.player}, leaderboard: $leaderboard")
+
+        _gameEndFlow.value = GameEndState(
+            winnerId = messageDTO.player,
+            leaderboard = leaderboard
+        )
+    }
+
+    fun clearGameEndState() {
+        _gameEndFlow.value = null
     }
 
 }

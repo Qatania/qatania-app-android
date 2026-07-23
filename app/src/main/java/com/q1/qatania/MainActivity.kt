@@ -153,7 +153,7 @@ class MainActivity : ComponentActivity() {
                                 navArgument("lobbyId") { type = NavType.StringType },
                             )
                         ) { backStackEntry ->
-                            GameScene()
+                            GameScene(onReturnToMenu = { menuViewModel.returnToMenu() })
                         }
                     }
                 }
