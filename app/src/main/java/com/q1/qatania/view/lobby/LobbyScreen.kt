@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.q1.qatania.model.player.PlayerModel
-import com.q1.qatania.theme.catanGold
+import com.q1.qatania.theme.catanButtons
 import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 
 @Composable
@@ -48,7 +48,7 @@ fun LobbyScreen(
         Text(
             text = "Lobby ID: ${lobbyState?.lobbyId}",
             style = MaterialTheme.typography.titleLarge.copy(fontSize = 32.sp),
-            color = catanGold
+            color = catanButtons
         )
 
         Spacer(modifier = Modifier.height(8.dp))

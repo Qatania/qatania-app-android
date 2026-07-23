@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.q1.qatania.theme.catanGold
+import com.q1.qatania.theme.catanButtons
 
 @Composable
 fun StartScreen(
@@ -38,7 +38,7 @@ fun StartScreen(
             Button(
                 onClick = { onCreateGameClick() },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanGold),
+                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)
@@ -64,7 +64,7 @@ fun StartScreen(
             Button(
                 onClick = { onJoinGameClick() },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanGold),
+                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)

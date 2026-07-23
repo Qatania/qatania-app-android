@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.q1.qatania.R
 import com.q1.qatania.model.player.PlayerModel
-import com.q1.qatania.theme.catanGoldLight
+import com.q1.qatania.theme.catanLightYellowContrast
 import com.q1.qatania.theme.success
 
 @Composable
@@ -52,7 +52,7 @@ fun PlayerListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(catanGoldLight)
+            .background(catanLightYellowContrast)
             .border(1.dp, Color.Black)
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

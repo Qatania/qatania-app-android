@@ -25,7 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.q1.qatania.theme.catanGold
+import com.q1.qatania.theme.catanButtons
 
 @Composable
 fun JoinGameScreen(
@@ -56,8 +56,8 @@ fun JoinGameScreen(
                     .width(320.dp)
                     .height(60.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = catanGold,
-                    unfocusedBorderColor = catanGold,
+                    focusedBorderColor = catanButtons,
+                    unfocusedBorderColor = catanButtons,
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
                     cursorColor = Color.Black,
@@ -69,7 +69,7 @@ fun JoinGameScreen(
             Button(
                 onClick = { onJoinClick(lobbyId) },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanGold),
+                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)
@@ -93,7 +93,7 @@ fun JoinGameScreen(
             Button(
                 onClick = { onBrowseClick() },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanGold),
+                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)

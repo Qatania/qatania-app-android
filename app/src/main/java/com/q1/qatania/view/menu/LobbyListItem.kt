@@ -25,8 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.q1.qatania.model.lobby.LobbyInfo
-import com.q1.qatania.model.lobby.LobbyState
-import com.q1.qatania.theme.catanGoldLight
+import com.q1.qatania.theme.catanLightYellowContrast
 
 @Composable
 fun LobbyListItem(
@@ -37,7 +36,7 @@ fun LobbyListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(catanGoldLight)
+            .background(catanLightYellowContrast)
             .border(1.dp, Color.Black)
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

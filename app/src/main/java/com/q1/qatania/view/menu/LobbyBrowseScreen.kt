@@ -33,8 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.q1.qatania.model.lobby.LobbyInfo
-import com.q1.qatania.theme.catanClay
-import com.q1.qatania.theme.catanGold
+import com.q1.qatania.theme.catanBackGround
+import com.q1.qatania.theme.catanButtons
 
 @Composable
 fun LobbyBrowserScreen(
@@ -50,7 +50,7 @@ fun LobbyBrowserScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(catanClay)
+            .background(catanBackGround)
     ) {
         Column(
             modifier = Modifier
@@ -62,7 +62,7 @@ fun LobbyBrowserScreen(
             Text(
                 text = "Lobby Browser",
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 32.sp),
-                color = catanGold
+                color = catanButtons
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -151,7 +151,7 @@ fun LobbyBrowserScreen(
                 .align(Alignment.TopEnd)
                 .padding(top = 32.dp, end = 16.dp)
                 .size(40.dp)
-                .background(catanGold, CircleShape)
+                .background(catanButtons, CircleShape)
                 .border(BorderStroke(1.dp, Color.Black), CircleShape)
         ) {
             Icon(
