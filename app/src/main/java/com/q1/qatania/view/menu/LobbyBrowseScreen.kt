@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ fun LobbyBrowserScreen(
     lobbies: List<LobbyInfo> = emptyList(),
     onRefreshClick: () -> Unit,
     onJoinLobbyClick: (String) -> Unit,
+    onBackClick: () -> Unit = {},
 ) {
 
     LaunchedEffect(Unit) {
@@ -156,6 +158,22 @@ fun LobbyBrowserScreen(
             Icon(
                 imageVector = Icons.Filled.Refresh,
                 contentDescription = "Refresh",
+                tint = Color.Black
+            )
+        }
+
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 32.dp, start = 16.dp)
+                .size(40.dp)
+                .background(catanButtons, CircleShape)
+                .border(BorderStroke(1.dp, Color.Black), CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
                 tint = Color.Black
             )
         }

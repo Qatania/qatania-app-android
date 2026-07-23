@@ -1,19 +1,26 @@
 package com.q1.qatania.view.lobby
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,13 +40,15 @@ import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 fun LobbyScreen(
     modifier: Modifier = Modifier,
     viewModel: LobbyViewModel = viewModel(),
+    onBackClick: () -> Unit = {},
 ) {
     val lobbyState by viewModel.lobbyState.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
     val players: List<PlayerModel> = lobbyState?.players?.values?.toList() ?: listOf()
 
+    Box(modifier = modifier.fillMaxSize()) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(vertical = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -107,6 +116,26 @@ fun LobbyScreen(
         }
 
 
+    }
+
+        IconButton(
+            onClick = {
+                viewModel.leaveLobby()
+                onBackClick()
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 32.dp, start = 16.dp)
+                .size(40.dp)
+                .background(catanButtons, CircleShape)
+                .border(BorderStroke(1.dp, Color.Black), CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.Black
+            )
+        }
     }
 
 }

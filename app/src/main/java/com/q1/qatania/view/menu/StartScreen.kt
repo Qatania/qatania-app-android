@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.q1.qatania.theme.catanButtons
 
@@ -28,6 +29,16 @@ fun StartScreen(
 ){
 
     Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Qatania",
+            style = MaterialTheme.typography.displayMedium,
+            fontWeight = FontWeight.Bold,
+            color = catanButtons,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 64.dp)
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()

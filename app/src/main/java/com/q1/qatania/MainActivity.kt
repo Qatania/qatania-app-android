@@ -124,7 +124,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onBrowseClick = {
                                     menuViewModel.navigateToLobbyBrowser()
-                                }
+                                },
+                                onBackClick = { navController.popBackStack() }
                             )
                         }
 
@@ -132,7 +133,8 @@ class MainActivity : ComponentActivity() {
                             LobbyBrowserScreen(
                                 lobbies = lobbies ?: emptyList(),
                                 onRefreshClick = { menuViewModel.getLobbies() },
-                                onJoinLobbyClick = { menuViewModel.joinLobby(it) }
+                                onJoinLobbyClick = { menuViewModel.joinLobby(it) },
+                                onBackClick = { navController.popBackStack() }
                             )
                         }
 
@@ -143,7 +145,7 @@ class MainActivity : ComponentActivity() {
                                 navArgument("lobbyId") { type = NavType.StringType },
                             )
                         ) { backStackEntry ->
-                            LobbyScreen()
+                            LobbyScreen(onBackClick = { navController.popBackStack() })
                         }
 
                         //Game Scene

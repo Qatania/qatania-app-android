@@ -82,6 +82,15 @@ class LobbyRepository private constructor() : AbstractRepository() {
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
+    fun leaveLobby(lobbyId: String, playerId: String) {
+        val messageDTO = MessageDTO(
+            type = MessageType.LEAVE_LOBBY,
+            player = playerId,
+            lobbyId = lobbyId
+        )
+        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+    }
+
     fun getLobbies(playerId: String) {
         val messageDTO = MessageDTO(
             type = MessageType.GET_LOBBIES,
