@@ -119,7 +119,10 @@ class GameViewModel : ViewModel() {
     }
 
     fun submitBankTrade(tradeRequest: Pair<Map<TileType, Int>, Map<TileType, Int>>, lobbyId: String){
-        val message = Json.encodeToJsonElement(tradeRequest).jsonObject
+        val message = buildJsonObject {
+            put("offeredResources", Json.encodeToJsonElement(tradeRequest.first))
+            put("targetResources", Json.encodeToJsonElement(tradeRequest.second))
+        }
 
         val messageDTO = MessageDTO(
             type = MessageType.TRADE_WITH_BANK,
