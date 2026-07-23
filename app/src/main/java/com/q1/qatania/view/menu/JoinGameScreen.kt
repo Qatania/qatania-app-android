@@ -33,7 +33,7 @@ fun JoinGameScreen(
     onBrowseClick: () -> Unit
 ) {
 
-    var lobbyId: String by rememberSaveable() { mutableStateOf("") }
+    var lobbyId: String by rememberSaveable { mutableStateOf("") }
 
     Box(modifier = Modifier.fillMaxSize()) {
         //TODO: Create Link to Lobby List
@@ -78,7 +78,7 @@ fun JoinGameScreen(
                 Text(
                     text = "JOIN",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
                 )
             }
 
@@ -102,7 +102,7 @@ fun JoinGameScreen(
                 Text(
                     text = "BROWSE",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
                 )
             }
 

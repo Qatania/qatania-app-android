@@ -47,7 +47,7 @@ fun StartScreen(
                 Text(
                     text = "CREATE GAME",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
                 )
             }
 
@@ -73,7 +73,7 @@ fun StartScreen(
                 Text(
                     text = "JOIN GAME",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
                 )
             }
         }

@@ -4,8 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
+import com.q1.qatania.theme.catanLightContrast
 import com.q1.qatania.util.getResourceIcon
 
 @Composable
@@ -41,16 +43,21 @@ fun ResourceBar(
 
     val resources = player?.resources
 
-
-    Column(
+    FlowRow( // breakline on overflow
         modifier = modifier
+            .fillMaxWidth()
             .padding(horizontal = 10.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
-
     ) {
         displayOrder.forEach { tileType ->
             val count = resources?.get(tileType) ?: 0
-            ResourceItem(tileType = tileType, count = count, onCheatAttempt = onCheatAttempt)
+            ResourceItem(
+                tileType = tileType,
+                count = count,
+                onCheatAttempt = onCheatAttempt,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
@@ -60,15 +67,16 @@ fun ResourceBar(
 private fun ResourceItem(
     tileType: TileType,
     count: Int,
-    onCheatAttempt: (TileType) -> Unit
+    onCheatAttempt: (TileType) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val iconRes = getResourceIcon(tileType)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier
-            .background(Color.LightGray.copy(alpha = 0.5f), shape = RoundedCornerShape(8.dp))
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+        modifier = modifier
+            .background(catanLightContrast.copy(alpha = 0.5f), shape = RoundedCornerShape(8.dp))
             .padding(10.dp)
 
     ) {

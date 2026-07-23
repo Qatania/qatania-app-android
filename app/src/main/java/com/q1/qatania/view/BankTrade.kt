@@ -1,5 +1,6 @@
 package com.q1.qatania.view
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,12 +22,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
+import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.catanLightContrast
 
 @Composable
 fun BankTrade(
@@ -82,9 +85,9 @@ fun BankTrade(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
-                ) { /* consume taps so they don't fall through to the scrim behind */ },
+                ) { },
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
             Column(
@@ -158,11 +161,20 @@ fun BankTrade(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(onClick = { onCancel(); tradeOffer = Pair(emptyMap(), emptyMap()) }) {
-                        Text("Back")
+                    Button(
+                        onClick = { onCancel(); tradeOffer = Pair(emptyMap(), emptyMap()) },
+                        colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                        border = BorderStroke(1.dp, Color.Black)
+                    ) {
+                        Text("Back", color = Color.White)
                     }
-                    Button(onClick = { onSubmit(tradeOffer); tradeOffer = Pair(emptyMap(), emptyMap())}, enabled = validTrade) {
-                        Text("Confirm Trade")
+                    Button(
+                        onClick = { onSubmit(tradeOffer); tradeOffer = Pair(emptyMap(), emptyMap())},
+                        enabled = validTrade,
+                        colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                        border = BorderStroke(1.dp, Color.Black)
+                    ) {
+                        Text("Confirm Trade", color = Color.White)
                     }
                 }
             }

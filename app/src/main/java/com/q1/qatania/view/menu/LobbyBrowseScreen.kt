@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.q1.qatania.model.lobby.LobbyInfo
-import com.q1.qatania.theme.catanBackGround
 import com.q1.qatania.theme.catanButtons
 
 @Composable
@@ -50,7 +49,7 @@ fun LobbyBrowserScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(catanBackGround)
+            .background(Color.White)
     ) {
         Column(
             modifier = Modifier

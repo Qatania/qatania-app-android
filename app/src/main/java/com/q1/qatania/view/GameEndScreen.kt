@@ -1,5 +1,6 @@
 package com.q1.qatania.view
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.q1.qatania.repository.GameRepository
+import com.q1.qatania.theme.catanButtons
+
 @Composable
 fun GameEndScreen(
     selfId: String,
@@ -154,9 +157,10 @@ fun GameEndScreen(
                 Button(
                     onClick = onReturnToMenu,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        containerColor = catanButtons,
+                        contentColor = Color.White
                     ),
+                    border = BorderStroke(1.dp, Color.Black),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text("Return to menu", fontWeight = FontWeight.Bold)
