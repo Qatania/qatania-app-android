@@ -32,6 +32,16 @@ class LobbyViewModel : ViewModel() {
         initialValue = null
     )
 
+    val players: StateFlow<List<PlayerModel>> = lobbyRepository.lobbyState.map { lobbyState ->
+        val playerId: String? = playerInfoRepository.getPlayerIdOrNull()
+        val players: List<PlayerModel> = lobbyState?.players?.values?.toList() ?: emptyList()
+        players.sortedByDescending { it.id == playerId }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     fun setUsername(newUsername: String) {
         val lobbyId: String? = lobbyState.value?.lobbyId;
 

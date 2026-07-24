@@ -16,12 +16,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
             val lobbies by menuViewModel.lobbiesState.collectAsState(initial = emptyList())
 
             //Collect navigation events
-            var lastNavigatedRoute by remember { mutableStateOf<String?>(null) }
             LaunchedEffect("navigation") {
                 menuViewModel.navigationEvents.collect { event ->
                     val route: String = when (event) {
@@ -61,14 +60,28 @@ class MainActivity : ComponentActivity() {
                         is NavigationEvent.ToGameScreen -> "game/${event.lobbyId}"
                     }
 
-                    if (route == lastNavigatedRoute) {
-                        Log.v("MainActivity", "Received duplicated navigation event, skipping")
+                    if (route == navController.currentRoute()) {
+                        Log.v("MainActivity", "Already on $route, skipping navigation")
                         return@collect
                     }
 
-                    lastNavigatedRoute = route
                     Log.v("MainActivity", "Navigating to $route")
-                    navController.navigate(route)
+                    navController.navigate(route) {
+                        launchSingleTop = true
+
+                        when (event) {
+                            is NavigationEvent.ToStartScreen ->
+                                popUpTo("main") { inclusive = true }
+
+                            is NavigationEvent.ToLobbyBrowseScreen ->
+                                popUpTo("lobbies") { inclusive = true }
+
+                            //A started game is left towards the menu, never back into the lobby
+                            is NavigationEvent.ToGameScreen -> popUpTo("main")
+
+                            else -> {}
+                        }
+                    }
                 }
 
             }
@@ -133,7 +146,9 @@ class MainActivity : ComponentActivity() {
                             LobbyBrowserScreen(
                                 lobbies = lobbies ?: emptyList(),
                                 onRefreshClick = { menuViewModel.getLobbies() },
-                                onJoinLobbyClick = { menuViewModel.joinLobby(it) },
+                                onJoinLobbyClick = {
+                                    menuViewModel.joinLobby(it, fromLobbyBrowser = true)
+                                },
                                 onBackClick = { navController.popBackStack() }
                             )
                         }
@@ -145,7 +160,7 @@ class MainActivity : ComponentActivity() {
                                 navArgument("lobbyId") { type = NavType.StringType },
                             )
                         ) { backStackEntry ->
-                            LobbyScreen(onBackClick = { navController.popBackStack() })
+                            LobbyScreen(onLeaveClick = { menuViewModel.leaveLobby() })
                         }
 
                         //Game Scene
@@ -168,4 +183,12 @@ class MainActivity : ComponentActivity() {
         val mainApplication = MainApplication.getInstance();
         mainApplication.onDestroy()
     }
+}
+
+private fun NavController.currentRoute(): String? {
+    val currentEntry: NavBackStackEntry = currentBackStackEntry ?: return null
+    val route: String = currentEntry.destination.route ?: return null
+    val lobbyId: String? = currentEntry.arguments?.getString("lobbyId")
+
+    return if (lobbyId != null) route.replace("{lobbyId}", lobbyId) else route
 }

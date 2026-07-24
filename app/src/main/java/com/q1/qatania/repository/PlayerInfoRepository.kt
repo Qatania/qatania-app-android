@@ -21,6 +21,10 @@ class PlayerInfoRepository private constructor() : AbstractRepository() {
         return playerId
     }
 
+    fun getPlayerIdOrNull(): String? {
+        return if (::playerId.isInitialized) playerId else null
+    }
+
     override fun handleMessage(messageDTO: MessageDTO) {
         when (messageDTO.type) {
             MessageType.CONNECTION_SUCCESSFUL -> handleInitialConnection(messageDTO)

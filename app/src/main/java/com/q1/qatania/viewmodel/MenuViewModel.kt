@@ -30,6 +30,7 @@ class MenuViewModel() : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = null
     )
+    private var lobbyReturnEvent: NavigationEvent = NavigationEvent.ToStartScreen
 
     init {
         observeLobbyState()
@@ -37,15 +38,22 @@ class MenuViewModel() : ViewModel() {
 
     private fun observeLobbyState() {
         viewModelScope.launch {
+            var previousLobbyId: String? = null
+
             lobbyRepository.lobbyState.collect { lobbyState ->
 
                 Log.v("MenuViewModel", "Updated lobbyState: $lobbyState")
 
                 if (lobbyState?.lobbyId.isNullOrEmpty()) {
-                    //Lobby closed
-                    _navigationChannel.send(NavigationEvent.ToStartScreen)
+                    //Lobby was left or closed, so return to the screen it was entered from
+                    if (previousLobbyId != null) {
+                        previousLobbyId = null
+                        _navigationChannel.send(lobbyReturnEvent)
+                    }
                     return@collect
                 }
+
+                previousLobbyId = lobbyState.lobbyId
 
                 val hasGameStarted = lobbyState.gameStarted;
                 if (hasGameStarted) {
@@ -61,7 +69,11 @@ class MenuViewModel() : ViewModel() {
         }
     }
 
-    fun joinLobby(lobbyId: String) {
+    fun joinLobby(lobbyId: String, fromLobbyBrowser: Boolean = false) {
+        lobbyReturnEvent =
+            if (fromLobbyBrowser) NavigationEvent.ToLobbyBrowseScreen
+            else NavigationEvent.ToStartScreen
+
         val playerId = playerInfoRepository.getPlayerId();
         lobbyRepository.joinLobby(
             lobbyId = lobbyId,
@@ -70,6 +82,8 @@ class MenuViewModel() : ViewModel() {
     }
 
     fun createLobby() {
+        lobbyReturnEvent = NavigationEvent.ToStartScreen
+
         val playerId = playerInfoRepository.getPlayerId();
         lobbyRepository.createLobby(
             playerId = playerId
@@ -95,9 +109,27 @@ class MenuViewModel() : ViewModel() {
         }
     }
 
-    fun returnToMenu() {
-        viewModelScope.launch {
-            _navigationChannel.send(NavigationEvent.ToStartScreen)
+    fun leaveLobby() {
+        val lobbyId: String? = lobbyRepository.lobbyState.value?.lobbyId
+        val playerId: String? = playerInfoRepository.getPlayerIdOrNull()
+
+        if (lobbyId.isNullOrBlank() || playerId == null) {
+            Log.d("MenuViewModel", "Leaving without an active lobby")
+            viewModelScope.launch {
+                _navigationChannel.send(lobbyReturnEvent)
+            }
+            return
         }
+
+        lobbyRepository.leaveLobby(
+            lobbyId = lobbyId,
+            playerId = playerId
+        )
+    }
+
+    fun returnToMenu() {
+        //a finished game always returns to the start screen, no matter how the lobby was entered
+        lobbyReturnEvent = NavigationEvent.ToStartScreen
+        leaveLobby()
     }
 }

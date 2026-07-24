@@ -1,5 +1,6 @@
 package com.q1.qatania.view.lobby
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,11 +41,13 @@ import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 fun LobbyScreen(
     modifier: Modifier = Modifier,
     viewModel: LobbyViewModel = viewModel(),
-    onBackClick: () -> Unit = {},
+    onLeaveClick: () -> Unit = {},
 ) {
     val lobbyState by viewModel.lobbyState.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
-    val players: List<PlayerModel> = lobbyState?.players?.values?.toList() ?: listOf()
+    val players: List<PlayerModel> by viewModel.players.collectAsStateWithLifecycle()
+    
+    BackHandler { onLeaveClick() }
 
     Box(modifier = modifier.fillMaxSize()) {
     Column(
@@ -119,10 +122,7 @@ fun LobbyScreen(
     }
 
         IconButton(
-            onClick = {
-                viewModel.leaveLobby()
-                onBackClick()
-            },
+            onClick = onLeaveClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 32.dp, start = 16.dp)

@@ -7,6 +7,7 @@ import com.q1.qatania.model.dto.MessageType
 import com.q1.qatania.model.gameboard.GameBoardModel
 import com.q1.qatania.model.lobby.LobbyInfo
 import com.q1.qatania.model.lobby.LobbyState
+import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.jsonParser
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,8 @@ class LobbyRepository private constructor() : AbstractRepository() {
     private val _lobbiesFlow = MutableStateFlow<List<LobbyInfo>>(emptyList())
     val lobbiesState = _lobbiesFlow.asStateFlow()
 
+    private var leftLobbyId: String? = null
+
     companion object {
         @Volatile
         private var INSTANCE: LobbyRepository? = null
@@ -34,6 +37,7 @@ class LobbyRepository private constructor() : AbstractRepository() {
     }
 
     fun joinLobby(lobbyId: String, playerId: String) {
+        leftLobbyId = null
         val messageDTO = MessageDTO(
             type = MessageType.JOIN_LOBBY,
             player = playerId,
@@ -43,6 +47,7 @@ class LobbyRepository private constructor() : AbstractRepository() {
     }
 
     fun createLobby(playerId: String) {
+        leftLobbyId = null
         val messageDTO = MessageDTO(
             type = MessageType.CREATE_LOBBY,
             player = playerId,
@@ -89,6 +94,10 @@ class LobbyRepository private constructor() : AbstractRepository() {
             lobbyId = lobbyId
         )
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+
+        leftLobbyId = lobbyId
+        _lobbyFlow.value = null
+        Log.d("LobbyRepository", "Left lobby $lobbyId")
     }
 
     fun getLobbies(playerId: String) {
@@ -104,7 +113,7 @@ class LobbyRepository private constructor() : AbstractRepository() {
 
         when (type) {
             MessageType.LOBBY_CREATED,
-            MessageType.PLAYER_JOINED -> handlePlayerJoined(messageDTO)
+            MessageType.PLAYER_JOINED,
             MessageType.LOBBY_UPDATED -> handleLobbyUpdated(messageDTO)
             MessageType.LOBBY_CLOSED -> handleLobbyClosed(messageDTO)
             MessageType.GAME_STARTED,
@@ -140,56 +149,71 @@ class LobbyRepository private constructor() : AbstractRepository() {
         _lobbiesFlow.value = lobbiesList
     }
 
-    private fun handlePlayerJoined(messageDTO: MessageDTO) {
-        if (_lobbyFlow.value == null) {
-            //Initial join to lobby, set lobby id
-            val lobbyId: String? = messageDTO.lobbyId;
-
-            if (lobbyId.isNullOrBlank()) {
-                Log.d("LobbyRepository", "Received lobbyId is empty, so skipping")
-                return
-            }
-
-            val previousState: LobbyState? = _lobbyFlow.value
-            _lobbyFlow.value = LobbyState(
-                lobbyId,
-                messageDTO.players ?: emptyMap(),
-                previousState?.gameStarted ?: false
-            )
-            Log.d("LobbyRepository", "Joined Lobby $lobbyId")
-            return;
-        }
-    }
-
     private fun handleLobbyUpdated(messageDTO: MessageDTO) {
-        val lobbyId: String? = messageDTO.lobbyId;
-        if (lobbyId.isNullOrBlank()) {
-            Log.d("LobbyRepository", "Received lobbyId is empty, so skipping")
+        val lobbyId: String = messageDTO.lobbyId ?: ""
+        val players = messageDTO.players ?: emptyMap()
+
+        if (!isRelevantLobbyUpdate(lobbyId, players)) {
             return
         }
 
         val previousState: LobbyState? = _lobbyFlow.value
         _lobbyFlow.value = LobbyState(
             lobbyId,
-            messageDTO.players ?: emptyMap(),
+            players,
             previousState?.gameStarted ?: false
         )
         Log.d("LobbyRepository", "Updated Lobby $lobbyId")
     }
 
     private fun handleLobbyClosed(messageDTO: MessageDTO) {
-        Log.d("LobbyRepository", "Lobby ${messageDTO.lobbyId} was closed")
-        _lobbyFlow.value = null;
-    }
+        val lobbyId: String? = messageDTO.lobbyId
+        val currentLobbyId: String? = _lobbyFlow.value?.lobbyId
 
-    private fun handlePlayerResourceUpdate(messageDTO: MessageDTO) {
-        val lobbyId: String? = messageDTO.lobbyId;
-        if (lobbyId.isNullOrBlank()) {
-            Log.d("LobbyRepository", "Received lobbyId is empty, so skipping")
+        if (currentLobbyId != null && currentLobbyId != lobbyId) {
+            Log.d("LobbyRepository", "Lobby $lobbyId was closed, but we are in $currentLobbyId")
             return
         }
 
-        _lobbyFlow.value = LobbyState(lobbyId, messageDTO.players ?: emptyMap(), true)
+        Log.d("LobbyRepository", "Lobby $lobbyId was closed")
+        _lobbyFlow.value = null
+    }
+
+    private fun handlePlayerResourceUpdate(messageDTO: MessageDTO) {
+        val lobbyId: String = messageDTO.lobbyId ?: ""
+        val players = messageDTO.players ?: emptyMap()
+
+        if (!isRelevantLobbyUpdate(lobbyId, players)) {
+            return
+        }
+
+        _lobbyFlow.value = LobbyState(lobbyId, players, true)
+    }
+
+    private fun isRelevantLobbyUpdate(lobbyId: String, players: Map<String, PlayerModel>): Boolean {
+        if (lobbyId.isBlank()) {
+            Log.d("LobbyRepository", "Received lobbyId is empty, so skipping")
+            return false
+        }
+
+        if (lobbyId == leftLobbyId) {
+            Log.d("LobbyRepository", "Received update of left lobby $lobbyId, so skipping")
+            return false
+        }
+
+        val currentLobbyId: String? = _lobbyFlow.value?.lobbyId
+        if (currentLobbyId != null && currentLobbyId != lobbyId) {
+            Log.d("LobbyRepository", "Received update of lobby $lobbyId while in $currentLobbyId")
+            return false
+        }
+
+        val playerId: String? = PlayerInfoRepository.getInstance().getPlayerIdOrNull()
+        if (playerId != null && !players.containsKey(playerId)) {
+            Log.d("LobbyRepository", "Player is not part of lobby $lobbyId, so skipping")
+            return false
+        }
+
+        return true
     }
 
 }
