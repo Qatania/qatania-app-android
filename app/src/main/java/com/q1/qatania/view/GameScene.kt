@@ -17,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.q1.qatania.model.gameboard.Road
@@ -40,6 +40,7 @@ import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.Tile
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.catanLightContrast
 import com.q1.qatania.util.ShakeDetector
 import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.game.GameBoardViewModel
@@ -109,6 +110,7 @@ fun GameScene(
 
     var resetCounter by remember { mutableIntStateOf(0) }
     var buildModeActivated: Boolean by rememberSaveable { mutableStateOf(false) };
+    var numbersVisible: Boolean by rememberSaveable { mutableStateOf(true) }
 
     val cameraManipulator = key(resetCounter) {
         rememberCameraManipulator(
@@ -204,7 +206,7 @@ fun GameScene(
 
                 tiles?.forEach { tile ->
                     key(tile.id) {
-                        TileNode(tile, modelLoader)
+                        TileNode(tile, modelLoader, numbersVisible) { cameraNode.worldPosition }
                     }
                 }
 
@@ -250,6 +252,17 @@ fun GameScene(
                     border = BorderStroke(1.dp, Color.Black)
                 ) {
                     Text("Reset Board zoom & tilt", color = Color.White)
+                }
+
+                // Toggle Numbers Button
+                Button(
+                    onClick = {
+                        numbersVisible = !numbersVisible
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                    border = BorderStroke(1.dp, Color.Black)
+                ) {
+                    Text("Toggle Numbers", color = Color.White)
                 }
 
                 if (playerState?.isActivePlayer == true) {
@@ -424,7 +437,12 @@ private fun SceneScope.SettlementPositionNode(
 }
 
 @Composable
-private fun SceneScope.TileNode(tile: Tile, modelLoader: ModelLoader) {
+private fun SceneScope.TileNode(
+    tile: Tile,
+    modelLoader: ModelLoader,
+    numbersVisible: Boolean,
+    cameraPositionProvider: () -> Position
+) {
     val tilePosition = Float3(
         tile.coordinates[0].toFloat(),
         0f,
@@ -437,6 +455,24 @@ private fun SceneScope.TileNode(tile: Tile, modelLoader: ModelLoader) {
             scaleToUnits = 1.0f,
             autoAnimate = true,
             position = tilePosition
+        )
+    }
+
+    if (numbersVisible && tile.value != 0) {
+        val numberColor = if (tile.value == 6 || tile.value == 8) {
+            catanLightContrast.toArgb()
+        } else {
+            Color.White.toArgb()
+        }
+
+        TextNode(
+            text = tile.value.toString(),
+            fontSize = 96f,
+            textColor = numberColor,
+            widthMeters = 0.6f,
+            heightMeters = 0.4f,
+            position = Float3(tilePosition.x, 0.75f, tilePosition.z),
+            cameraPositionProvider = cameraPositionProvider
         )
     }
 }
