@@ -458,21 +458,23 @@ private fun SceneScope.TileNode(
         )
     }
 
-    if (numbersVisible && tile.value != 0) {
+    if (tile.value != 0) {
         val numberColor = if (tile.value == 6 || tile.value == 8) {
             catanLightContrast.toArgb()
         } else {
             Color.White.toArgb()
         }
 
-        TextNode(
-            text = tile.value.toString(),
-            fontSize = 96f,
-            textColor = numberColor,
-            widthMeters = 0.6f,
-            heightMeters = 0.4f,
-            position = Float3(tilePosition.x, 0.75f, tilePosition.z),
-            cameraPositionProvider = cameraPositionProvider
-        )
+        Node(isVisible = numbersVisible) {
+            TextNode(
+                text = tile.value.toString(),
+                fontSize = 96f,
+                textColor = numberColor,
+                widthMeters = 0.6f,
+                heightMeters = 0.4f,
+                position = Float3(tilePosition.x, 0.75f, tilePosition.z),
+                cameraPositionProvider = cameraPositionProvider
+            )
+        }
     }
 }
