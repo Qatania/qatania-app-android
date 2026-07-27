@@ -1,5 +1,6 @@
 package com.q1.qatania.view.menu
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.q1.qatania.theme.catanButtons
@@ -26,9 +28,13 @@ import com.q1.qatania.theme.catanButtons
 fun StartScreen(
     onCreateGameClick: () -> Unit,
     onJoinGameClick: () -> Unit
-){
+) {
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Box(modifier = Modifier.fillMaxSize()) {
+
         Text(
             text = "Qatania",
             style = MaterialTheme.typography.displayMedium,
@@ -39,13 +45,15 @@ fun StartScreen(
                 .padding(top = 64.dp)
         )
 
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .align(if (isLandscape) Alignment.BottomCenter else Alignment.Center)
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+
             Button(
                 onClick = { onCreateGameClick() },
                 shape = RoundedCornerShape(30.dp),

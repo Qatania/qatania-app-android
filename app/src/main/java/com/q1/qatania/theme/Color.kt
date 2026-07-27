@@ -10,6 +10,8 @@ val catanButtons = Color(0xffdba11c) // Buttons
 val success = Color(0xFF008000)
 val darkOrange = Color(0xFFCC5500) // Alert
 
+val catanClayDark = Color(0xFF8C4E27)
+
 
 
 

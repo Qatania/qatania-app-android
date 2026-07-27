@@ -1,6 +1,7 @@
 package com.q1.qatania.view
 
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -10,15 +11,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Label
+import androidx.compose.material.icons.automirrored.filled.LabelOff
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.DoubleArrow
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,14 +40,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.q1.qatania.model.gameboard.Road
 import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.Tile
 import com.q1.qatania.model.player.PlayerModel
+import com.q1.qatania.theme.catanBackGround
 import com.q1.qatania.theme.catanButtons
-import com.q1.qatania.theme.catanLightContrast
 import com.q1.qatania.util.ShakeDetector
 import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.game.GameBoardViewModel
@@ -77,6 +85,8 @@ fun GameScene(
     val lobbyId: String = lobbyState?.lobbyId ?: ""
     val self: String = gameViewModel.self
 
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val buildModeYOffset = 0.5f
     val tiles = gameBoard?.tiles
@@ -86,7 +96,7 @@ fun GameScene(
     val diceState by gameViewModel.diceState.collectAsState()
     var showDicePopup by remember { mutableStateOf(false) }
 
-    var showBankTradePopup by remember {mutableStateOf(false)}
+    var showBankTradePopup by remember { mutableStateOf(false) }
 
     val gameEndState by gameViewModel.gameEndState.collectAsState()
 
@@ -130,7 +140,7 @@ fun GameScene(
 
     Scaffold(
         topBar = {
-            Box(modifier = Modifier.background(Color.Black)) {
+            Box(modifier = Modifier.background(catanBackGround)) {
                 PlayerBar(
                     players = players,
                     self = self,
@@ -141,7 +151,9 @@ fun GameScene(
         },
         bottomBar = {
             ResourceBar(
-                modifier = Modifier.fillMaxWidth().background(Color.Black),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(catanBackGround),
                 player = playerState,
                 onCheatAttempt = { gameViewModel.cheat(lobbyId, it) }
             )
@@ -152,7 +164,7 @@ fun GameScene(
                     FloatingActionButton(
                         onClick = { gameViewModel.rollDice(lobbyId) },
                         containerColor = catanButtons,
-                        contentColor = Color.White
+                        contentColor = Color.White,
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Casino,
@@ -189,12 +201,14 @@ fun GameScene(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .background(catanBackGround)
         ) {
             SceneView(
                 modifier = Modifier.fillMaxSize(),
                 engine = engine,
                 cameraNode = cameraNode,
                 cameraManipulator = cameraManipulator,
+                isOpaque = false,
                 autoCenterContent = false //prevent re-centering and therefore re-creation of the gameboard
 
             ) {
@@ -240,7 +254,7 @@ fun GameScene(
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .align(Alignment.TopEnd),
+                    .align(if (isLandscape) Alignment.TopStart else Alignment.TopEnd),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Reset Button
@@ -248,10 +262,14 @@ fun GameScene(
                     onClick = {
                         resetCounter++
                     },
+                    shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                     border = BorderStroke(1.dp, Color.Black)
                 ) {
-                    Text("Reset Board zoom & tilt", color = Color.White)
+                    Icon(
+                        imageVector = Icons.Filled.Cameraswitch,
+                        contentDescription = "Reset Board zoom & tilt"
+                    )
                 }
 
                 // Toggle Numbers Button
@@ -259,10 +277,14 @@ fun GameScene(
                     onClick = {
                         numbersVisible = !numbersVisible
                     },
+                    shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                     border = BorderStroke(1.dp, Color.Black)
                 ) {
-                    Text("Toggle Numbers", color = Color.White)
+                    Icon(
+                        imageVector = if (numbersVisible) Icons.AutoMirrored.Filled.Label else Icons.AutoMirrored.Filled.LabelOff,
+                        contentDescription = "Toggle Numbers"
+                    )
                 }
 
                 if (playerState?.isActivePlayer == true) {
@@ -271,20 +293,29 @@ fun GameScene(
                         onClick = {
                             buildModeActivated = !buildModeActivated
                         },
+                        shape = CircleShape,
                         colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                         border = BorderStroke(1.dp, Color.Black)
                     ) {
-                        Text("Toggle Build Mode", color = Color.White)
+
+                        Icon(
+                            imageVector = if (buildModeActivated) Icons.Filled.Build else Icons.Outlined.Build,
+                            contentDescription = "Toggle Build Mode"
+                        )
                     }
 
                     Button(
                         onClick = {
                             showBankTradePopup = true
                         },
+                        shape = CircleShape,
                         colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
                         border = BorderStroke(1.dp, Color.Black)
                     ) {
-                        Text("Trade Resources ", color = Color.White)
+                        Icon(
+                            imageVector = Icons.Filled.SwapHoriz,
+                            contentDescription = "Trade Resources"
+                        )
                     }
                 }
             }
@@ -300,7 +331,12 @@ fun GameScene(
             if (showBankTradePopup) {
                 BankTrade(
                     player = players[self],
-                    onSubmit = {tradeOffer -> gameViewModel.submitBankTrade(tradeOffer, lobbyId); showBankTradePopup = false },
+                    onSubmit = { tradeOffer ->
+                        gameViewModel.submitBankTrade(
+                            tradeOffer,
+                            lobbyId
+                        ); showBankTradePopup = false
+                    },
                     onCancel = { showBankTradePopup = false }
                 )
             }
@@ -460,7 +496,7 @@ private fun SceneScope.TileNode(
 
     if (tile.value != 0) {
         val numberColor = if (tile.value == 6 || tile.value == 8) {
-            catanLightContrast.toArgb()
+            Color.Red.toArgb()
         } else {
             Color.White.toArgb()
         }
@@ -470,10 +506,10 @@ private fun SceneScope.TileNode(
                 text = tile.value.toString(),
                 fontSize = 96f,
                 textColor = numberColor,
-                widthMeters = 0.6f,
+                widthMeters = 0.4f,
                 heightMeters = 0.4f,
                 position = Float3(tilePosition.x, 0.75f, tilePosition.z),
-                cameraPositionProvider = cameraPositionProvider
+                cameraPositionProvider = cameraPositionProvider,
             )
         }
     }

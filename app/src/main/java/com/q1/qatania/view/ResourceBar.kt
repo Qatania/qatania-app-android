@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
-import com.q1.qatania.theme.catanLightContrast
+import com.q1.qatania.theme.catanClayDark
 import com.q1.qatania.util.getResourceIcon
 
 @Composable
@@ -76,7 +75,7 @@ private fun ResourceItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
         modifier = modifier
-            .background(catanLightContrast.copy(alpha = 0.5f), shape = RoundedCornerShape(8.dp))
+            .background(catanClayDark.copy(alpha = 0.7f), shape = RoundedCornerShape(8.dp))
             .padding(10.dp)
 
     ) {
