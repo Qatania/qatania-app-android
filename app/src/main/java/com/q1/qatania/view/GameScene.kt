@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -42,7 +43,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.q1.qatania.model.gameboard.PortTransform
+import com.q1.qatania.model.gameboard.PortVisuals
 import com.q1.qatania.model.gameboard.Road
 import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.Tile
@@ -61,6 +65,9 @@ import io.github.sceneview.gesture.CameraGestureDetector
 import io.github.sceneview.loaders.ModelLoader
 import io.github.sceneview.material.setBaseColorFactor
 import io.github.sceneview.math.Position
+import io.github.sceneview.math.Rotation
+import io.github.sceneview.node.CubeNode
+import io.github.sceneview.node.SphereNode
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
@@ -68,6 +75,7 @@ import io.github.sceneview.rememberEnvironmentLoader
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 import kotlinx.coroutines.delay
+import kotlin.math.atan2
 
 @Composable
 fun GameScene(
@@ -92,6 +100,7 @@ fun GameScene(
     val tiles = gameBoard?.tiles
     val settlementPositions = gameBoard?.settlementPositions
     val roads = gameBoard?.roads
+    val ports = gameBoard?.ports
 
     val diceState by gameViewModel.diceState.collectAsState()
     var showDicePopup by remember { mutableStateOf(false) }
@@ -181,8 +190,8 @@ fun GameScene(
                 } else {
                     FloatingActionButton(
                         onClick = {
-                            gameViewModel.handleEndTurnClick(lobbyId)
                             buildModeActivated = false
+                            gameViewModel.handleEndTurnClick(lobbyId)
                         },
                         containerColor = catanButtons,
                         contentColor = Color.White
@@ -204,7 +213,9 @@ fun GameScene(
                 .background(catanBackGround)
         ) {
             SceneView(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(1.0f),
                 engine = engine,
                 cameraNode = cameraNode,
                 cameraManipulator = cameraManipulator,
@@ -249,12 +260,39 @@ fun GameScene(
                         )
                     }
                 }
+
+                ports?.forEach { port ->
+
+                    val portVisuals: PortVisuals = port.portVisuals
+                    val port1Position = Float3(
+                        portVisuals.buildingSite1Position[0].toFloat(), 0.05f,
+                        portVisuals.buildingSite1Position[1].toFloat()
+                    )
+                    val port2Position = Float3(
+                        portVisuals.buildingSite2Position[0].toFloat(), 0.05f,
+                        portVisuals.buildingSite2Position[1].toFloat()
+                    )
+
+                    val portTransform: PortTransform = portVisuals.portTransform
+
+                    PortNode(
+                        shorePosition = port1Position,
+                        portTransform = portTransform,
+                        modelLoader = modelLoader
+                    )
+                    PortNode(
+                        shorePosition = port2Position,
+                        portTransform = portTransform,
+                        modelLoader = modelLoader
+                    )
+                }
             }
 
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .align(if (isLandscape) Alignment.TopStart else Alignment.TopEnd),
+                    .align(if (isLandscape) Alignment.TopStart else Alignment.TopEnd)
+                    .zIndex(5.0f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Reset Button
@@ -319,39 +357,39 @@ fun GameScene(
                     }
                 }
             }
-
-
-            if (showDicePopup && diceState != null) {
-                DiceResultPopup(
-                    diceState = diceState!!,
-                    onDismiss = { showDicePopup = false; gameViewModel.clearDiceState() }
-                )
-            }
-
-            if (showBankTradePopup) {
-                BankTrade(
-                    player = players[self],
-                    onSubmit = { tradeOffer ->
-                        gameViewModel.submitBankTrade(
-                            tradeOffer,
-                            lobbyId
-                        ); showBankTradePopup = false
-                    },
-                    onCancel = { showBankTradePopup = false }
-                )
-            }
-
-            if (gameEndState != null) {
-                GameEndScreen(
-                    selfId = self,
-                    gameEndState = gameEndState!!,
-                    onReturnToMenu = {
-                        gameViewModel.clearGameEndState()
-                        onReturnToMenu()
-                    }
-                )
-            }
         }
+    }
+
+    if (showDicePopup && diceState != null) {
+        DiceResultPopup(
+            diceState = diceState!!,
+            onDismiss = { showDicePopup = false; gameViewModel.clearDiceState() }
+        )
+    }
+
+    if (showBankTradePopup) {
+        BankTrade(
+            player = players[self],
+            onSubmit = { tradeOffer ->
+                gameViewModel.submitBankTrade(
+                    tradeOffer,
+                    lobbyId
+                );
+                showBankTradePopup = false
+            },
+            onCancel = { showBankTradePopup = false }
+        )
+    }
+
+    if (gameEndState != null) {
+        GameEndScreen(
+            selfId = self,
+            gameEndState = gameEndState!!,
+            onReturnToMenu = {
+                gameViewModel.clearGameEndState()
+                onReturnToMenu()
+            }
+        )
     }
 }
 
@@ -398,20 +436,37 @@ private fun SceneScope.RoadNode(
                 rotation = roadRotation
             )
         }
-    } else if (buildModeActivated) {
+    } else {
+        //Keeps the reference to the CubeNode below so that its
+        //attributes can be updated later on in SideEffect
+        val nodeRef = remember { NodeRef<CubeNode>() }
+
         CubeNode(
             size = Position(0.1f, 0.1f, 0.4f),
-            position = roadPosition.apply { y = buildModeYOffset },
+            position = roadPosition.copy(y = buildModeYOffset),
             rotation = roadRotation,
             apply = {
+                nodeRef.node = this
                 isTouchable = true
                 isHittable = true
                 onSingleTapConfirmed = {
+                    Log.d(
+                        "GameScene",
+                        "Detected Tab on road ${road.id} with buildMode = $buildModeActivated"
+                    )
                     gameViewModel.handleRoadTap(lobbyId, road)
                     true; //-> Means tap event is consumed and should not be propagated
                 }
             }
         )
+
+        //Needed to update visibility when buildMode is toggled
+        SideEffect {
+            nodeRef.node?.let {
+                it.isVisible = buildModeActivated
+                it.isHittable = buildModeActivated
+            }
+        }
     }
 }
 
@@ -451,13 +506,16 @@ private fun SceneScope.SettlementPositionNode(
                 position = position,
             )
         }
-    } else if (buildModeActivated) {
+    } else {
+        //Keeps the reference to the SphereNode below so that its
+        //attributes can be updated later on in SideEffect
+        val nodeRef = remember { NodeRef<SphereNode>() }
+
         SphereNode(
             radius = 0.1f,
-            position = position.apply {
-                y = buildModeYOffset
-            },
+            position = position.copy(y = buildModeYOffset),
             apply = {
+                nodeRef.node = this
                 isTouchable = true
                 isHittable = true
                 onSingleTapConfirmed = {
@@ -469,6 +527,14 @@ private fun SceneScope.SettlementPositionNode(
                 }
             }
         )
+
+        //Needed to update visibility when buildMode is toggled
+        SideEffect {
+            nodeRef.node?.let {
+                it.isVisible = buildModeActivated
+                it.isHittable = buildModeActivated
+            }
+        }
     }
 }
 
@@ -513,4 +579,35 @@ private fun SceneScope.TileNode(
             )
         }
     }
+}
+
+@Composable
+private fun SceneScope.PortNode(
+    shorePosition: Float3,
+    portTransform: PortTransform,
+    modelLoader: ModelLoader,
+) {
+
+    val dx = portTransform.x.toFloat() - shorePosition.x
+    val dz = portTransform.y.toFloat() - shorePosition.z
+
+    val yaw = Math.toDegrees(atan2(dx, dz).toDouble()).toFloat()
+
+    rememberModelInstance(
+        modelLoader,
+        "models/port.glb"
+    )?.let { modelInstance ->
+        ModelNode(
+            modelInstance = modelInstance,
+            scaleToUnits = 0.3f,
+            autoAnimate = true,
+            position = shorePosition,
+            rotation = Rotation(x = 0f, y = yaw, z = 0f)
+        )
+    }
+
+}
+
+private class NodeRef<T> {
+    var node: T? = null
 }

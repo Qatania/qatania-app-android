@@ -28,7 +28,7 @@ import com.q1.qatania.util.getResourceIcon
 fun ResourceSelector(
     resource: TileType,
     count: Int,
-    current : Int?,
+    current: Int?,
     onIncrement: () -> Unit,
     onDecrement: () -> Unit
 ) {
@@ -40,15 +40,21 @@ fun ResourceSelector(
             Icon(
                 Icons.Default.RemoveCircle,
                 "Decrement",
-                tint = if (count > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                tint = if (count > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+                    alpha = 0.38f
+                )
             )
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(painterResource(id = getResourceIcon(resource)), contentDescription = resource.name, Modifier.size(28.dp))
+            Image(
+                painterResource(id = getResourceIcon(resource)),
+                contentDescription = resource.name,
+                Modifier.size(24.dp)
+            )
             Text(
                 if (current != null) "$count ($current)" else "$count",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(60.dp)
