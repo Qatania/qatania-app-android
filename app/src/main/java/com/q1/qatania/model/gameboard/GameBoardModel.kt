@@ -9,5 +9,6 @@ data class GameBoardModel(
     val roads: List<Road>,
     val ports: List<Port>,
     val ringsOfBoard: Int,
-    val sizeOfHex: Int
+    val sizeOfHex: Int,
+    val robber:Robber
 )

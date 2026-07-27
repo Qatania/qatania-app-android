@@ -231,8 +231,17 @@ fun GameScene(
 
                 tiles?.forEach { tile ->
                     key(tile.id) {
-                        TileNode(tile, modelLoader, numbersVisible) { cameraNode.worldPosition }
+                        TileNode(
+                            tile = tile,
+                            modelLoader = modelLoader,
+                            numbersVisible = numbersVisible,
+                            cameraPositionProvider = { cameraNode.worldPosition },
+                            onTileClick = { gameViewModel.onTileClick(lobbyId, tile.id) } // Pass the handler
+                        )
                     }
+                }
+                gameBoard?.robber?.let { robber ->
+                    RobberNode(robber, modelLoader)
                 }
 
                 settlementPositions?.forEach { settlementPosition ->
@@ -543,7 +552,8 @@ private fun SceneScope.TileNode(
     tile: Tile,
     modelLoader: ModelLoader,
     numbersVisible: Boolean,
-    cameraPositionProvider: () -> Position
+    cameraPositionProvider: () -> Position,
+    onTileClick: () -> Unit
 ) {
     val tilePosition = Float3(
         tile.coordinates[0].toFloat(),
@@ -556,7 +566,16 @@ private fun SceneScope.TileNode(
             modelInstance = it,
             scaleToUnits = 1.0f,
             autoAnimate = true,
-            position = tilePosition
+            position = tilePosition,
+            apply = {
+                // Make the tile clickable
+                isTouchable = true
+                isHittable = true
+                onSingleTapConfirmed = {
+                    onTileClick()
+                    true
+                }
+            }
         )
     }
 
@@ -607,6 +626,27 @@ private fun SceneScope.PortNode(
     }
 
 }
+@Composable
+private fun SceneScope.RobberNode(
+    robber:com.q1.qatania.model.gameboard.Robber,
+    modelLoader: ModelLoader){
+    if(robber.coordinates.size<2)return;
+    val robberPosition = Float3(
+        robber.coordinates[0].toFloat(),
+        0.3f, // Make it be ontop of everything.
+        robber.coordinates[1].toFloat()
+    )
+    rememberModelInstance(modelLoader,"models/city.glb")?.let { modelInstance ->
+        ModelNode(
+            modelInstance = modelInstance,
+            scaleToUnits = 0.5f,
+            autoAnimate = true,
+            position = robberPosition,
+            rotation = Rotation(x = 0f, y = 0f, z = 0f)
+        )
+    }
+}
+
 
 private class NodeRef<T> {
     var node: T? = null

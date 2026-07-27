@@ -14,6 +14,7 @@ data class PlayerModel(
     val isActivePlayer: Boolean,
     val canRollDice: Boolean,
     val isSetupRound: Boolean,
+    val needsToMoveRobber: Boolean = false,
     val victoryPoints: Int,
     val resources: Map<TileType, Int>
 )

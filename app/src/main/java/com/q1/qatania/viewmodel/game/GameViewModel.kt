@@ -11,6 +11,7 @@ import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.repository.GameRepository
 import com.q1.qatania.repository.GameRepository.DiceState
+import com.q1.qatania.repository.LobbyRepository
 import com.q1.qatania.repository.PlayerInfoRepository
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.Json
@@ -89,7 +90,22 @@ class GameViewModel : ViewModel() {
 
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
+    fun onTileClick(lobbyId: String, tileId: Int) {
+        val lobbyRepository = LobbyRepository.getInstance()
+        val currentPlayer = lobbyRepository.lobbyState.value?.players?.get(self)
 
+        // Jetzt verlassen wir uns rein auf das Signal vom Server
+        if (currentPlayer?.isActivePlayer == true && currentPlayer.needsToMoveRobber) {
+            Log.d("GameViewModel", "Server says: Move the robber!")
+            val messageDTO = MessageDTO(
+                type = MessageType.PLACE_ROBBER,
+                lobbyId = lobbyId,
+                player = self,
+                message = buildJsonObject { put("tileId", tileId) }
+            )
+            MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+        }
+    }
     fun handleSettlementTap(lobbyId: String, settlementPosition: SettlementPosition) {
         Log.d("GameViewModel", "Tapped settlement position $settlementPosition")
 

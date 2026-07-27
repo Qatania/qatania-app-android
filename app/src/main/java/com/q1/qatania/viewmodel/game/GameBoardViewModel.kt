@@ -1,6 +1,7 @@
 package com.q1.qatania.viewmodel.game
 
 import android.util.Log
+import androidx.compose.animation.core.copy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.q1.qatania.model.gameboard.GameBoardModel
@@ -9,11 +10,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import com.q1.qatania.model.gameboard.Robber
 
 class GameBoardViewModel() : ViewModel() {
     private val _scalingFactor = 20.0 // trial and error xd
 
     private val gameBoardRepository = GameBoardRepository.getInstance()
+
 
     val gameboardState: StateFlow<GameBoardModel?> =
         gameBoardRepository.gameboardState.map { receivedBoard ->
@@ -62,11 +65,16 @@ class GameBoardViewModel() : ViewModel() {
                             }
                         )
                     )
-                }
+
+                },
+                robber = receivedBoard.robber.copy(coordinates = receivedBoard.robber.coordinates.map { value ->
+                    value / _scalingFactor})
             )
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+
 }

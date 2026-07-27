@@ -34,7 +34,7 @@ class GameBoardRepository : AbstractRepository() {
             MessageType.GAME_STARTED,
             MessageType.NEXT_TURN,
             MessageType.UPGRADE_SETTLEMENT -> handleGameboardUpdate(messageDTO)
-
+            MessageType.PLACE_ROBBER -> handleGameboardUpdate(messageDTO)
             else -> {}
         }
     }
