@@ -26,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -52,6 +53,7 @@ import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.Tile
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
+import com.q1.qatania.repository.GameRepository
 import com.q1.qatania.theme.catanBackGround
 import com.q1.qatania.theme.catanButtons
 import com.q1.qatania.util.ShakeDetector
@@ -367,8 +369,30 @@ fun GameScene(
                         )
                     }
                 }
+                if (playerState?.isActivePlayer == true && playerState?.needsToMoveRobber == true) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .zIndex(10f), // Ganz nach oben legen
+                        contentAlignment = Alignment.Center
+                    ) {
+                        androidx.compose.material3.Surface(
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                            color = Color.Black.copy(alpha = 0.8f),
+                            contentColor = Color.White
+                        ) {
+                            androidx.compose.material3.Text(
+                                text = "Du hast eine 7 gewürfelt!\nBewege den Räuber auf ein Feld.",
+                                modifier = Modifier.padding(24.dp),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
+                            )
+                        }
+                    }
+                }
             }
         }
+
     }
 
     if (showDicePopup && diceState != null) {
@@ -657,6 +681,16 @@ private fun SceneScope.RobberNode(
             position = robberPosition,
             rotation = Rotation(x = 0f, y = 0f, z = 0f)
         )
+    }
+}
+
+@Composable
+fun DiceResultPopup(diceState: GameRepository.DiceState, onDismiss: () -> Unit) {
+    val total = diceState.dice1 + diceState.dice2
+    // ... your existing popup code ...
+
+    if (total == 7) {
+        Text("Move the Robber!", color = Color.Red)
     }
 }
 
