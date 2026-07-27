@@ -50,6 +50,7 @@ import com.q1.qatania.model.gameboard.PortVisuals
 import com.q1.qatania.model.gameboard.Road
 import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.Tile
+import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.theme.catanBackGround
 import com.q1.qatania.theme.catanButtons
@@ -64,9 +65,10 @@ import io.github.sceneview.SceneView
 import io.github.sceneview.gesture.CameraGestureDetector
 import io.github.sceneview.loaders.ModelLoader
 import io.github.sceneview.material.setBaseColorFactor
+import io.github.sceneview.math.Direction
 import io.github.sceneview.math.Position
-import io.github.sceneview.math.Rotation
 import io.github.sceneview.node.CubeNode
+import io.github.sceneview.node.ModelNode
 import io.github.sceneview.node.SphereNode
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberCameraNode
@@ -552,9 +554,12 @@ private fun SceneScope.TileNode(
     )
 
     rememberModelInstance(modelLoader, tile.type.path)?.let {
+        //Forest asset is too small, so size is correctly
+        val scale: Float = if (tile.type == TileType.WOOD) 1.5f else 1.0f
+
         ModelNode(
             modelInstance = it,
-            scaleToUnits = 1.0f,
+            scaleToUnits = scale,
             autoAnimate = true,
             position = tilePosition
         )
@@ -591,21 +596,29 @@ private fun SceneScope.PortNode(
     val dx = portTransform.x.toFloat() - shorePosition.x
     val dz = portTransform.y.toFloat() - shorePosition.z
 
-    val yaw = Math.toDegrees(atan2(dx, dz).toDouble()).toFloat()
+    //val yaw = Math.toDegrees(atan2(dx, dz).toDouble()).toFloat() - 180
 
     rememberModelInstance(
         modelLoader,
         "models/port.glb"
     )?.let { modelInstance ->
+
+        val nodeRef = remember { NodeRef<ModelNode>() }
+
         ModelNode(
             modelInstance = modelInstance,
             scaleToUnits = 0.3f,
             autoAnimate = true,
             position = shorePosition,
-            rotation = Rotation(x = 0f, y = yaw, z = 0f)
+            apply = {
+                nodeRef.node = this
+            }
         )
-    }
 
+        SideEffect {
+            nodeRef.node?.lookTowards(lookDirection = Direction(dx, shorePosition.y, dz))
+        }
+    }
 }
 
 private class NodeRef<T> {
