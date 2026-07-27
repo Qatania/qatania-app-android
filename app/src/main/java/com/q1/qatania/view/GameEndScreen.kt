@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.q1.qatania.repository.GameRepository
 import com.q1.qatania.theme.catanButtons
 
@@ -53,15 +54,19 @@ fun GameEndScreen(
         Color(0xFFCD7F32),
     )
 
-    Dialog(onDismissRequest = onReturnToMenu) {
+    Dialog(
+        onDismissRequest = onReturnToMenu,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+
+    ) {
         Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.6f)),
+            modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Card(
-                modifier = Modifier.fillMaxWidth(0.85f),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
