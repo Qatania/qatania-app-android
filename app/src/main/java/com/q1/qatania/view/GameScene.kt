@@ -69,6 +69,7 @@ import io.github.sceneview.loaders.ModelLoader
 import io.github.sceneview.material.setBaseColorFactor
 import io.github.sceneview.math.Direction
 import io.github.sceneview.math.Position
+import io.github.sceneview.math.Rotation
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.node.SphereNode
@@ -79,7 +80,6 @@ import io.github.sceneview.rememberEnvironmentLoader
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 import kotlinx.coroutines.delay
-import kotlin.math.atan2
 
 @Composable
 fun GameScene(
