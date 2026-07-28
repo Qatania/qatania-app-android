@@ -57,6 +57,10 @@ class GameBoardViewModel() : ViewModel() {
                 ports = receivedBoard.ports.map { receivedElement ->
                     receivedElement.copy(
                         portVisuals = receivedElement.portVisuals.copy(
+                            portTransform = receivedElement.portVisuals.portTransform.copy(
+                                x = receivedElement.portVisuals.portTransform.x / _scalingFactor,
+                                y = receivedElement.portVisuals.portTransform.y / _scalingFactor
+                            ),
                             buildingSite1Position = receivedElement.portVisuals.buildingSite1Position.map { value ->
                                 value / _scalingFactor
                             },

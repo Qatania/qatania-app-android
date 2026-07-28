@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.q1.qatania.model.gameboard.Port
 import com.q1.qatania.model.gameboard.PortTransform
 import com.q1.qatania.model.gameboard.PortVisuals
 import com.q1.qatania.model.gameboard.Road
@@ -84,6 +85,11 @@ import io.github.sceneview.rememberEnvironmentLoader
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 import kotlinx.coroutines.delay
+
+private const val LABEL_HOVER_HEIGHT = 0.75f
+
+private const val LABEL_WIDTH = 0.5f
+private const val LABEL_ASPECT_RATIO = 4f
 
 @Composable
 fun GameScene(
@@ -242,8 +248,6 @@ fun GameScene(
                         TileNode(
                             tile = tile,
                             modelLoader = modelLoader,
-                            numbersVisible = numbersVisible,
-                            cameraPositionProvider = { cameraNode.worldPosition },
                             onTileClick = {
                                 gameViewModel.onTileClick(
                                     lobbyId,
@@ -253,6 +257,14 @@ fun GameScene(
                         )
                     }
                 }
+                
+                BoardLabelsNode(
+                    tiles = tiles,
+                    ports = ports,
+                    isVisible = numbersVisible,
+                    cameraPositionProvider = { cameraNode.worldPosition }
+                )
+
                 gameBoard?.robber?.let { robber ->
                     RobberNode(robber, modelLoader)
                 }
@@ -307,6 +319,7 @@ fun GameScene(
                         portTransform = portTransform,
                         modelLoader = modelLoader
                     )
+                    PortNode(portTransform = portTransform)
                 }
             }
 
@@ -586,8 +599,6 @@ private fun SceneScope.SettlementPositionNode(
 private fun SceneScope.TileNode(
     tile: Tile,
     modelLoader: ModelLoader,
-    numbersVisible: Boolean,
-    cameraPositionProvider: () -> Position,
     onTileClick: () -> Unit
 ) {
     val tilePosition = Float3(
@@ -617,25 +628,102 @@ private fun SceneScope.TileNode(
         )
     }
 
-    if (tile.value != 0) {
-        val numberColor = if (tile.value == 6 || tile.value == 8) {
-            Color.Red.toArgb()
-        } else {
-            Color.White.toArgb()
+}
+
+@Composable
+private fun SceneScope.BoardLabelsNode(
+    tiles: List<Tile>?,
+    ports: List<Port>?,
+    isVisible: Boolean,
+    cameraPositionProvider: () -> Position
+) {
+    Node(isVisible = isVisible) {
+        tiles?.forEach { tile ->
+            key(tile.id) {
+                TileNumberLabel(
+                    tile = tile,
+                    cameraPositionProvider = cameraPositionProvider
+                )
+            }
         }
 
-        Node(isVisible = numbersVisible) {
-            TextNode(
-                text = tile.value.toString(),
-                fontSize = 96f,
-                textColor = numberColor,
-                widthMeters = 0.4f,
-                heightMeters = 0.4f,
-                position = Float3(tilePosition.x, 0.75f, tilePosition.z),
-                cameraPositionProvider = cameraPositionProvider,
-            )
+        ports?.forEachIndexed { index, port ->
+            key(index) {
+                PortRateLabel(
+                    port = port,
+                    cameraPositionProvider = cameraPositionProvider
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun SceneScope.TileNumberLabel(
+    tile: Tile,
+    cameraPositionProvider: () -> Position
+) {
+    if (tile.value == 0) return
+
+    val numberColor = if (tile.value == 6 || tile.value == 8) {
+        Color.Red.toArgb()
+    } else {
+        Color.White.toArgb()
+    }
+
+    TextNode(
+        text = tile.value.toString(),
+        fontSize = 96f,
+        textColor = numberColor,
+        widthMeters = LABEL_WIDTH,
+        heightMeters = LABEL_WIDTH / LABEL_ASPECT_RATIO,
+        position = Float3(
+            tile.coordinates[0].toFloat(),
+            LABEL_HOVER_HEIGHT,
+            tile.coordinates[1].toFloat()
+        ),
+        cameraPositionProvider = cameraPositionProvider,
+    )
+}
+
+@Composable
+private fun SceneScope.PortRateLabel(
+    port: Port,
+    cameraPositionProvider: () -> Position
+) {
+    val resource = port.resource?.name ?: "?"
+    val portTransform = port.portVisuals.portTransform
+
+    TextNode(
+        text = "$resource (${port.inputResourceAmount}:1)",
+        fontSize = 56f,
+        widthMeters = LABEL_WIDTH,
+        heightMeters = LABEL_WIDTH / LABEL_ASPECT_RATIO,
+        position = Float3(
+            portTransform.x.toFloat(),
+            LABEL_HOVER_HEIGHT,
+            portTransform.y.toFloat()
+        ),
+        cameraPositionProvider = cameraPositionProvider
+    )
+}
+
+@Composable
+private fun SceneScope.PortNode(
+    portTransform: PortTransform
+) {
+    val markerHeight = 0.4f
+
+    CylinderNode(
+        radius = 0.15f,
+        height = markerHeight,
+        materialInstance = materialLoader.createColorInstance(Color(0xFF6B4A2F)),
+        position = Float3(
+            portTransform.x.toFloat(),
+            markerHeight / 2 - 0.05f, // move up to 0 and then back down to be "flush" with the tiles
+            portTransform.y.toFloat()
+        )
+    )
 }
 
 @Composable
