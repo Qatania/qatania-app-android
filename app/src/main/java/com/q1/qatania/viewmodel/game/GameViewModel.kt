@@ -153,4 +153,5 @@ class GameViewModel : ViewModel() {
         )
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
+
 }
