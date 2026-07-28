@@ -31,7 +31,6 @@ abstract class AbstractRepository {
         }
     }
 
-
     abstract fun handleMessage(messageDTO: MessageDTO)
 
 }

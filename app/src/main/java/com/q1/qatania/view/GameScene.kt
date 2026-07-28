@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.filled.LabelOff
@@ -25,7 +26,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -240,7 +244,12 @@ fun GameScene(
                             modelLoader = modelLoader,
                             numbersVisible = numbersVisible,
                             cameraPositionProvider = { cameraNode.worldPosition },
-                            onTileClick = { gameViewModel.onTileClick(lobbyId, tile.id) } // Pass the handler
+                            onTileClick = {
+                                gameViewModel.onTileClick(
+                                    lobbyId,
+                                    tile.id
+                                )
+                            } // Pass the handler
                         )
                     }
                 }
@@ -373,19 +382,19 @@ fun GameScene(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .zIndex(10f), // Ganz nach oben legen
+                            .zIndex(10f),
                         contentAlignment = Alignment.Center
                     ) {
-                        androidx.compose.material3.Surface(
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
                             color = Color.Black.copy(alpha = 0.8f),
                             contentColor = Color.White
                         ) {
-                            androidx.compose.material3.Text(
-                                text = "Du hast eine 7 gewürfelt!\nBewege den Räuber auf ein Feld.",
+                            Text(
+                                text = "You rolled a 7!\nMove the robber to a tile.",
                                 modifier = Modifier.padding(24.dp),
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.headlineSmall
                             )
                         }
                     }
@@ -663,17 +672,19 @@ private fun SceneScope.PortNode(
         }
     }
 }
+
 @Composable
 private fun SceneScope.RobberNode(
-    robber:com.q1.qatania.model.gameboard.Robber,
-    modelLoader: ModelLoader){
-    if(robber.coordinates.size<2)return;
+    robber: com.q1.qatania.model.gameboard.Robber,
+    modelLoader: ModelLoader
+) {
+    if (robber.coordinates.size < 2) return;
     val robberPosition = Float3(
         robber.coordinates[0].toFloat(),
         0.3f, // Make it be ontop of everything.
         robber.coordinates[1].toFloat()
     )
-    rememberModelInstance(modelLoader,"models/city.glb")?.let { modelInstance ->
+    rememberModelInstance(modelLoader, "models/city.glb")?.let { modelInstance ->
         ModelNode(
             modelInstance = modelInstance,
             scaleToUnits = 0.5f,
