@@ -259,7 +259,7 @@ fun GameScene(
                         )
                     }
                 }
-                
+
                 BoardLabelsNode(
                     tiles = tiles,
                     ports = ports,
@@ -409,7 +409,7 @@ fun GameScene(
         )
     }
 
-    if(!showDicePopup && showRobberPopup){
+    if (!showDicePopup && showRobberPopup) {
         RobberPopup(
             onDismiss = { showRobberPopup = false }
         )
@@ -727,8 +727,6 @@ private fun SceneScope.PortNode(
     val dx = portTransform.x.toFloat() - shorePosition.x
     val dz = portTransform.y.toFloat() - shorePosition.z
 
-    //val yaw = Math.toDegrees(atan2(dx, dz).toDouble()).toFloat() - 180
-
     rememberModelInstance(
         modelLoader,
         "models/port.glb"
@@ -775,7 +773,6 @@ private fun SceneScope.RobberNode(
         )
     }
 }
-
 
 
 private class NodeRef<T> {

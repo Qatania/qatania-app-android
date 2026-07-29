@@ -71,20 +71,6 @@ class LobbyViewModel : ViewModel() {
         )
     }
 
-    fun leaveLobby() {
-        val lobbyId: String? = lobbyState.value?.lobbyId;
-
-        if (lobbyId.isNullOrBlank()) {
-            Log.e("LobbyViewModel", "Cannot leave lobby, lobbyId is null");
-            return;
-        }
-
-        lobbyRepository.leaveLobby(
-            lobbyId = lobbyId,
-            playerId = playerInfoRepository.getPlayerId(),
-        )
-    }
-
     fun startGame() {
         val lobbyId: String? = lobbyState.value?.lobbyId;
 

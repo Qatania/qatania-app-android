@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 
 class GameViewModel : ViewModel() {
@@ -90,6 +89,7 @@ class GameViewModel : ViewModel() {
 
         MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
+
     fun onTileClick(lobbyId: String, tileId: Int) {
         val lobbyRepository = LobbyRepository.getInstance()
         val currentPlayer = lobbyRepository.lobbyState.value?.players?.get(self)
@@ -106,6 +106,7 @@ class GameViewModel : ViewModel() {
             MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
         }
     }
+
     fun handleSettlementTap(lobbyId: String, settlementPosition: SettlementPosition) {
         Log.d("GameViewModel", "Tapped settlement position $settlementPosition")
 
@@ -115,7 +116,6 @@ class GameViewModel : ViewModel() {
 
         val message = buildJsonObject {
             put("settlementPositionId", settlementPosition.id)
-
         }
 
         val messageDTO = MessageDTO(
@@ -139,7 +139,10 @@ class GameViewModel : ViewModel() {
         gameRepository.clearGameEndState()
     }
 
-    fun submitBankTrade(tradeRequest: Pair<Map<TileType, Int>, Map<TileType, Int>>, lobbyId: String){
+    fun submitBankTrade(
+        tradeRequest: Pair<Map<TileType, Int>, Map<TileType, Int>>,
+        lobbyId: String
+    ) {
         val message = buildJsonObject {
             put("offeredResources", Json.encodeToJsonElement(tradeRequest.first))
             put("targetResources", Json.encodeToJsonElement(tradeRequest.second))
