@@ -572,6 +572,7 @@ private fun SceneScope.SettlementPositionNode(
     val building = settlementPosition.building;
 
     if (building != null) {
+        //So that the upgraded settlement to city gets rendered accordingly
         key(building.type) {
             rememberModelInstance(
                 modelLoader,
