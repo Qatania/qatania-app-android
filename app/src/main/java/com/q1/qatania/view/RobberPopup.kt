@@ -53,7 +53,7 @@ fun RobberPopup(
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = "Move the robber to a tile.",
+                        text = "Move the robber by tapping on a tile.",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleSmall
                     )

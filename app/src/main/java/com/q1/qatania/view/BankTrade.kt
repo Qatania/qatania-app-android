@@ -38,7 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
-import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.buttons
 
 @Composable
 fun BankTrade(
@@ -174,7 +174,7 @@ fun BankTrade(
                     ) {
                         Button(
                             onClick = { onCancel(); tradeOffer = Pair(emptyMap(), emptyMap()) },
-                            colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                            colors = ButtonDefaults.buttonColors(containerColor = buttons),
                             border = BorderStroke(1.dp, Color.Black)
                         ) {
                             Text("Back", color = Color.White)
@@ -184,7 +184,7 @@ fun BankTrade(
                                 onSubmit(tradeOffer); tradeOffer = Pair(emptyMap(), emptyMap())
                             },
                             enabled = validTrade,
-                            colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                            colors = ButtonDefaults.buttonColors(containerColor = buttons),
                             border = BorderStroke(1.dp, Color.Black)
                         ) {
                             Text("Confirm Trade", color = Color.White)

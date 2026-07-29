@@ -2,15 +2,22 @@ package com.q1.qatania.theme
 
 import androidx.compose.ui.graphics.Color
 
-val catanBackGround = Color(0xff338de5) // Main background
-val catanLightContrast = Color(0xff00e2b6)
-val catanLightYellowContrast = Color(0xfff9f871)
-val catanLightGreenContrast = Color(0xff95f289)
-val catanButtons = Color(0xffdba11c) // Buttons
+val menuBackground = Color(0xFFF4E4C1)
+val gameBackground = Color(0xFF7EC8E3) // Game background
+val buttons = Color(0xffdba11c) // Buttons
+val title = Color(0xFF8B5A2B)
+val onBackground = Color(0xFF3E2723)
+val listItemBackground = Color(0xFFFBF3DE)
+
 val success = Color(0xFF008000)
-val darkOrange = Color(0xFFCC5500) // Alert
+val alertSnackbar = Color(0xFFFF9800) // Alert
+val infoSnackbar = Color(0xFF1B5E7A) // Info
 
 val catanClayDark = Color(0xFF8C4E27)
+
+val notReadyState = Color(0xFF9E9E9E)
+
+
 
 
 

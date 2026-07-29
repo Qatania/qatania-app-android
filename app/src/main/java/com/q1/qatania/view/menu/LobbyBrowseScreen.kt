@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.q1.qatania.model.lobby.LobbyInfo
-import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.buttons
+import com.q1.qatania.theme.title
 
 @Composable
 fun LobbyBrowserScreen(
@@ -49,9 +51,7 @@ fun LobbyBrowserScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -63,7 +63,7 @@ fun LobbyBrowserScreen(
             Text(
                 text = "Lobby Browser",
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 32.sp),
-                color = catanButtons
+                color = title
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -90,7 +90,6 @@ fun LobbyBrowserScreen(
 
                             Text(
                                 text = "Lobby ID",
-                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.weight(1.5f)
                             )
@@ -99,7 +98,6 @@ fun LobbyBrowserScreen(
 
                             Text(
                                 text = "Host",
-                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.weight(1.5f)
                             )
@@ -108,7 +106,6 @@ fun LobbyBrowserScreen(
 
                             Text(
                                 text = "Player Count",
-                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.weight(1.5f)
                             )
@@ -127,7 +124,7 @@ fun LobbyBrowserScreen(
                         ) {
                             Text(
                                 text = "Currently no open lobbies",
-                                color = Color.White,
+                                color = Color.Black,
                                 fontWeight = FontWeight.Bold,
                             )
                         }
@@ -152,29 +149,30 @@ fun LobbyBrowserScreen(
                 .align(Alignment.TopEnd)
                 .padding(top = 32.dp, end = 16.dp)
                 .size(40.dp)
-                .background(catanButtons, CircleShape)
+                .background(buttons, CircleShape)
                 .border(BorderStroke(1.dp, Color.Black), CircleShape)
         ) {
             Icon(
                 imageVector = Icons.Filled.Refresh,
                 contentDescription = "Refresh",
-                tint = Color.Black
+                tint = Color.White
             )
         }
 
         IconButton(
             onClick = onBackClick,
+            colors = IconButtonDefaults.iconButtonColors(),
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 32.dp, start = 16.dp)
                 .size(40.dp)
-                .background(catanButtons, CircleShape)
+                .background(buttons, CircleShape)
                 .border(BorderStroke(1.dp, Color.Black), CircleShape)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = Color.Black
+                tint = Color.White
             )
         }
     }

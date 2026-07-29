@@ -67,7 +67,7 @@ fun PlayerBar(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 40.dp),
+            .padding(horizontal = 40.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top,
         contentPadding = PaddingValues(horizontal = 16.dp)

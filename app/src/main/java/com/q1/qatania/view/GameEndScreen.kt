@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.q1.qatania.repository.GameRepository
-import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.buttons
 
 @Composable
 fun GameEndScreen(
@@ -179,7 +179,7 @@ fun GameEndScreen(
                     Button(
                         onClick = onReturnToMenu,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = catanButtons,
+                            containerColor = buttons,
                             contentColor = Color.White
                         ),
                         border = BorderStroke(1.dp, Color.Black),

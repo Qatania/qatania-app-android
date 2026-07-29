@@ -22,7 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.buttons
+import com.q1.qatania.theme.title
 
 @Composable
 fun StartScreen(
@@ -39,10 +40,10 @@ fun StartScreen(
             text = "Qatania",
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
-            color = catanButtons,
+            color = title,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 64.dp)
+                .padding(top = 72.dp)
         )
 
 
@@ -57,7 +58,7 @@ fun StartScreen(
             Button(
                 onClick = { onCreateGameClick() },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                colors = ButtonDefaults.buttonColors(containerColor = buttons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)
@@ -83,7 +84,7 @@ fun StartScreen(
             Button(
                 onClick = { onJoinGameClick() },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                colors = ButtonDefaults.buttonColors(containerColor = buttons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)

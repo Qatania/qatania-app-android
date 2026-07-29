@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.buttons
 
 @Composable
 fun JoinGameScreen(
@@ -45,8 +45,6 @@ fun JoinGameScreen(
     var lobbyId: String by rememberSaveable { mutableStateOf("") }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        //TODO: Create Link to Lobby List
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -65,8 +63,8 @@ fun JoinGameScreen(
                     .width(320.dp)
                     .height(60.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = catanButtons,
-                    unfocusedBorderColor = catanButtons,
+                    focusedBorderColor = buttons,
+                    unfocusedBorderColor = buttons,
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
                     cursorColor = Color.Black,
@@ -78,7 +76,7 @@ fun JoinGameScreen(
             Button(
                 onClick = { onJoinClick(lobbyId) },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                colors = ButtonDefaults.buttonColors(containerColor = buttons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)
@@ -91,6 +89,8 @@ fun JoinGameScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = "OR",
                 style = MaterialTheme.typography.titleLarge,
@@ -102,7 +102,7 @@ fun JoinGameScreen(
             Button(
                 onClick = { onBrowseClick() },
                 shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                colors = ButtonDefaults.buttonColors(containerColor = buttons),
                 border = BorderStroke(1.dp, Color.Black),
                 modifier = Modifier
                     .width(320.dp)
@@ -123,13 +123,12 @@ fun JoinGameScreen(
                 .align(Alignment.TopStart)
                 .padding(top = 32.dp, start = 16.dp)
                 .size(40.dp)
-                .background(catanButtons, CircleShape)
+                .background(buttons, CircleShape)
                 .border(BorderStroke(1.dp, Color.Black), CircleShape)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = Color.Black
             )
         }
     }

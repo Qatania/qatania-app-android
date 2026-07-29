@@ -22,10 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.q1.qatania.model.lobby.LobbyInfo
-import com.q1.qatania.theme.catanLightYellowContrast
+import com.q1.qatania.theme.listItemBackground
 
 @Composable
 fun LobbyListItem(
@@ -36,7 +37,7 @@ fun LobbyListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(catanLightYellowContrast)
+            .background(listItemBackground)
             .border(1.dp, Color.Black)
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -77,6 +78,7 @@ fun LobbyListItem(
             color = Color.Black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
             modifier = Modifier.weight(1.5f)
         )
 

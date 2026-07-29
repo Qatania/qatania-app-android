@@ -3,6 +3,7 @@ package com.q1.qatania.view
 
 import android.content.res.Configuration
 import android.util.Log
+import android.view.MotionEvent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -45,6 +47,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.filament.ColorGrading
+import com.google.android.filament.Skybox
+import com.google.android.filament.ToneMapper
+import com.q1.qatania.model.gameboard.BuildingType
 import com.q1.qatania.model.gameboard.Port
 import com.q1.qatania.model.gameboard.PortTransform
 import com.q1.qatania.model.gameboard.PortVisuals
@@ -54,8 +60,8 @@ import com.q1.qatania.model.gameboard.Tile
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.repository.GameRepository
-import com.q1.qatania.theme.catanBackGround
-import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.buttons
+import com.q1.qatania.theme.gameBackground
 import com.q1.qatania.util.ShakeDetector
 import com.q1.qatania.util.hexToFloat4
 import com.q1.qatania.viewmodel.game.GameBoardViewModel
@@ -64,21 +70,27 @@ import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneScope
 import io.github.sceneview.SceneView
+import io.github.sceneview.SurfaceType
+import io.github.sceneview.createEnvironment
 import io.github.sceneview.gesture.CameraGestureDetector
 import io.github.sceneview.loaders.ModelLoader
 import io.github.sceneview.material.setBaseColorFactor
 import io.github.sceneview.math.Direction
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
+import io.github.sceneview.math.colorOf
+import io.github.sceneview.math.toLinearSpace
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.node.SphereNode
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
+import io.github.sceneview.rememberEnvironment
 import io.github.sceneview.rememberEnvironmentLoader
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
+import io.github.sceneview.rememberView
 import kotlinx.coroutines.delay
 
 private const val LABEL_HOVER_HEIGHT = 0.75f
@@ -140,6 +152,25 @@ fun GameScene(
     val modelLoader = rememberModelLoader(engine)
     val envLoader = rememberEnvironmentLoader(engine)
 
+    //Need so that the skybox matches the background of top and bottom bar
+    val view = rememberView(engine)
+    DisposableEffect(view) {
+        val colorGrading = ColorGrading.Builder()
+            .toneMapper(ToneMapper.Linear())
+            .build(engine)
+        view.colorGrading = colorGrading
+        view.bloomOptions = view.bloomOptions.apply { enabled = false }
+        onDispose { engine.destroyColorGrading(colorGrading) }
+    }
+
+    val environment = rememberEnvironment(envLoader, isOpaque = true, key = gameBackground) {
+        createEnvironment(envLoader, isOpaque = true).copy(
+            skybox = Skybox.Builder()
+                .color(colorOf(gameBackground).toLinearSpace().toFloatArray())
+                .build(engine)
+        )
+    }
+
     val homePos = Float3(0f, 10f, 0.1f)
     val targetPos = Float3(0f, 0f, 0f)
 
@@ -165,7 +196,7 @@ fun GameScene(
 
     Scaffold(
         topBar = {
-            Box(modifier = Modifier.background(catanBackGround)) {
+            Box(modifier = Modifier.background(gameBackground)) {
                 PlayerBar(
                     players = players,
                     self = self,
@@ -178,7 +209,7 @@ fun GameScene(
             ResourceBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(catanBackGround),
+                    .background(gameBackground),
                 player = playerState,
                 onCheatAttempt = { gameViewModel.cheat(lobbyId, it) }
             )
@@ -188,7 +219,7 @@ fun GameScene(
                 if (playerState?.isSetupRound == false && playerState?.canRollDice == true) {
                     FloatingActionButton(
                         onClick = { gameViewModel.rollDice(lobbyId) },
-                        containerColor = catanButtons,
+                        containerColor = buttons,
                         contentColor = Color.White,
                     ) {
                         Icon(
@@ -209,7 +240,7 @@ fun GameScene(
                             buildModeActivated = false
                             gameViewModel.handleEndTurnClick(lobbyId)
                         },
-                        containerColor = catanButtons,
+                        containerColor = buttons,
                         contentColor = Color.White
                     ) {
                         Icon(
@@ -226,16 +257,16 @@ fun GameScene(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(catanBackGround)
+                .background(gameBackground)
         ) {
             SceneView(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zIndex(1.0f),
+                modifier = Modifier.fillMaxSize(),
                 engine = engine,
+                view = view,
+                environment = environment,
                 cameraNode = cameraNode,
                 cameraManipulator = cameraManipulator,
-                isOpaque = false,
+                isOpaque = true,
                 autoCenterContent = false //prevent re-centering and therefore re-creation of the gameboard
 
             ) {
@@ -338,7 +369,7 @@ fun GameScene(
                         resetCounter++
                     },
                     shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttons),
                     border = BorderStroke(1.dp, Color.Black)
                 ) {
                     Icon(
@@ -353,7 +384,7 @@ fun GameScene(
                         numbersVisible = !numbersVisible
                     },
                     shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttons),
                     border = BorderStroke(1.dp, Color.Black)
                 ) {
                     Icon(
@@ -369,7 +400,7 @@ fun GameScene(
                             buildModeActivated = !buildModeActivated
                         },
                         shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                        colors = ButtonDefaults.buttonColors(containerColor = buttons),
                         border = BorderStroke(1.dp, Color.Black)
                     ) {
 
@@ -384,7 +415,7 @@ fun GameScene(
                             showBankTradePopup = true
                         },
                         shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = catanButtons),
+                        colors = ButtonDefaults.buttonColors(containerColor = buttons),
                         border = BorderStroke(1.dp, Color.Black)
                     ) {
                         Icon(
@@ -484,38 +515,43 @@ private fun SceneScope.RoadNode(
                 rotation = roadRotation
             )
         }
-    } else {
-        //Keeps the reference to the CubeNode below so that its
-        //attributes can be updated later on in SideEffect
-        val nodeRef = remember { NodeRef<CubeNode>() }
+    }
 
-        CubeNode(
-            size = Position(0.1f, 0.1f, 0.4f),
-            position = roadPosition.copy(y = buildModeYOffset),
-            rotation = roadRotation,
-            apply = {
-                nodeRef.node = this
-                isTouchable = true
-                isHittable = true
-                onSingleTapConfirmed = {
-                    Log.d(
-                        "GameScene",
-                        "Detected Tab on road ${road.id} with buildMode = $buildModeActivated"
-                    )
-                    gameViewModel.handleRoadTap(lobbyId, road)
-                    true; //-> Means tap event is consumed and should not be propagated
-                }
-            }
-        )
+    //Keeps the reference to the CubeNode below so that its
+    //attributes can be updated later on in SideEffect
+    val nodeRef = remember { NodeRef<CubeNode>() }
+    val color: String = road.color ?: "#FFFFFF"
 
-        //Needed to update visibility when buildMode is toggled
-        SideEffect {
-            nodeRef.node?.let {
-                it.isVisible = buildModeActivated
-                it.isHittable = buildModeActivated
+    CubeNode(
+        size = Position(0.1f, 0.1f, 0.4f),
+        position = roadPosition.copy(y = buildModeYOffset),
+        rotation = roadRotation,
+        materialInstance = remember(color) {
+            materialLoader.createColorInstance(hexToFloat4(color))
+        },
+        apply = {
+            nodeRef.node = this
+            isTouchable = true
+            isHittable = true
+            onSingleTapConfirmed = {
+                Log.d(
+                    "GameScene",
+                    "Detected Tab on road ${road.id} with buildMode = $buildModeActivated"
+                )
+                gameViewModel.handleRoadTap(lobbyId, road)
+                true; //-> Means tap event is consumed and should not be propagated
             }
         }
+    )
+
+    //Needed to update visibility when buildMode is toggled
+    SideEffect {
+        nodeRef.node?.let {
+            it.isVisible = buildModeActivated
+            it.isHittable = buildModeActivated
+        }
     }
+
 }
 
 @Composable
@@ -533,57 +569,70 @@ private fun SceneScope.SettlementPositionNode(
         settlementPosition.coordinates[1].toFloat()
     )
 
-    if (settlementPosition.building != null) {
-        rememberModelInstance(
-            modelLoader,
-            settlementPosition.building.type.path
-        )?.let { modelInstance ->
+    val building = settlementPosition.building;
 
-            modelInstance.materialInstances.forEach { materialInstance ->
-                materialInstance.setBaseColorFactor(
-                    hexToFloat4(
-                        settlementPosition.building.color
+    if (building != null) {
+        key(building.type) {
+            rememberModelInstance(
+                modelLoader,
+                building.type.path
+            )?.let { modelInstance ->
+
+                modelInstance.materialInstances.forEach { materialInstance ->
+                    materialInstance.setBaseColorFactor(
+                        hexToFloat4(building.color)
                     )
-                )
-            }
-
-            ModelNode(
-                modelInstance = modelInstance,
-                scaleToUnits = 0.3f,
-                autoAnimate = true,
-                position = position,
-            )
-        }
-    } else {
-        //Keeps the reference to the SphereNode below so that its
-        //attributes can be updated later on in SideEffect
-        val nodeRef = remember { NodeRef<SphereNode>() }
-
-        SphereNode(
-            radius = 0.1f,
-            position = position.copy(y = buildModeYOffset),
-            apply = {
-                nodeRef.node = this
-                isTouchable = true
-                isHittable = true
-                onSingleTapConfirmed = {
-                    gameViewModel.handleSettlementTap(
-                        lobbyId,
-                        settlementPosition
-                    )
-                    true; //-> Means tap event is consumed and should not be propagated
                 }
-            }
-        )
 
-        //Needed to update visibility when buildMode is toggled
-        SideEffect {
-            nodeRef.node?.let {
-                it.isVisible = buildModeActivated
-                it.isHittable = buildModeActivated
+                ModelNode(
+                    modelInstance = modelInstance,
+                    scaleToUnits = 0.3f,
+                    autoAnimate = true,
+                    position = position,
+                )
             }
         }
     }
+
+
+    //Keeps the reference to the SphereNode below so that its
+    //attributes can be updated later on in SideEffect
+    val nodeRef = remember { NodeRef<SphereNode>() }
+
+    val settlementAction: (MotionEvent) -> Boolean = {
+        gameViewModel.handleSettlementTap(
+            lobbyId,
+            settlementPosition
+        )
+        true; //-> Means tap event is consumed and should not be propagated
+    }
+
+    val color: String = building?.color ?: "#FFFFFF"
+
+    SphereNode(
+        radius = 0.1f,
+        position = position.copy(y = buildModeYOffset),
+        materialInstance = remember(color) {
+            materialLoader.createColorInstance(hexToFloat4(color))
+        },
+        apply = {
+            nodeRef.node = this
+            isTouchable = true
+            isHittable = true
+            onSingleTapConfirmed = settlementAction
+        }
+    )
+
+    //Needed to update visibility when buildMode is toggled
+    SideEffect {
+        nodeRef.node?.let {
+            it.isVisible = buildModeActivated
+            it.isHittable = buildModeActivated
+            //Setting settlement action again here so that the closure gets the correct state
+            it.onSingleTapConfirmed = settlementAction
+        }
+    }
+
 }
 
 @Composable

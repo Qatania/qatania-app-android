@@ -2,6 +2,7 @@ package com.q1.qatania.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
@@ -21,10 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.theme.catanClayDark
 import com.q1.qatania.util.getResourceIcon
+import com.q1.qatania.util.hexToFloat4
 
 @Composable
 fun ResourceBar(
@@ -41,6 +44,7 @@ fun ResourceBar(
     )
 
     val resources = player?.resources
+    val color = if(player?.color != null) Color(player.color.toColorInt()) else catanClayDark;
 
     FlowRow( // breakline on overflow
         modifier = modifier
@@ -55,7 +59,9 @@ fun ResourceBar(
                 tileType = tileType,
                 count = count,
                 onCheatAttempt = onCheatAttempt,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .background(color.copy(alpha = 0.7f), shape = RoundedCornerShape(8.dp))
             )
         }
     }
@@ -75,9 +81,8 @@ private fun ResourceItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
         modifier = modifier
-            .background(catanClayDark.copy(alpha = 0.7f), shape = RoundedCornerShape(8.dp))
+            .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
             .padding(10.dp)
-
     ) {
         Image(
             painter = painterResource(id = iconRes),

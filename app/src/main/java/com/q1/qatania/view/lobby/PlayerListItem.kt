@@ -13,9 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,7 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.q1.qatania.R
 import com.q1.qatania.model.player.PlayerModel
-import com.q1.qatania.theme.catanLightYellowContrast
+import com.q1.qatania.theme.listItemBackground
+import com.q1.qatania.theme.notReadyState
 import com.q1.qatania.theme.success
 
 @Composable
@@ -52,7 +54,7 @@ fun PlayerListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(catanLightYellowContrast)
+            .background(listItemBackground)
             .border(1.dp, Color.Black)
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -100,13 +102,13 @@ fun PlayerListItem(
                 modifier = Modifier
                     .size(36.dp)
                     .background(
-                        color = if (player.isReady) success else Color.Red,
+                        color = if (player.isReady) success else success.copy(alpha = 0.3f),
                         shape = CircleShape
                     )
                     .border(BorderStroke(1.dp, Color.Black), CircleShape)
             ) {
                 Icon(
-                    imageVector = if (player.isReady) Icons.Outlined.Check else Icons.Default.Block,
+                    imageVector = if (player.isReady) Icons.Filled.Check else Icons.Outlined.Check,
                     contentDescription = if (player.isReady) "Ready" else "Not ready",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
@@ -114,9 +116,9 @@ fun PlayerListItem(
             }
         } else {
             Icon(
-                imageVector = if (player.isReady) Icons.Default.CheckCircle else Icons.Default.Block,
+                imageVector = if (player.isReady) Icons.Default.CheckCircle else Icons.Default.HourglassEmpty,
                 contentDescription = if (player.isReady) "Ready" else "Not ready",
-                tint = if (player.isReady) success else Color.Red,
+                tint = if (player.isReady) success else notReadyState,
                 modifier = Modifier.size(32.dp)
             )
         }

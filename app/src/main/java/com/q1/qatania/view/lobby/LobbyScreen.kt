@@ -34,7 +34,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.q1.qatania.model.player.PlayerModel
-import com.q1.qatania.theme.catanButtons
+import com.q1.qatania.theme.buttons
+import com.q1.qatania.theme.title
 import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 
 @Composable
@@ -46,80 +47,79 @@ fun LobbyScreen(
     val lobbyState by viewModel.lobbyState.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
     val players: List<PlayerModel> by viewModel.players.collectAsStateWithLifecycle()
-    
+
     BackHandler { onLeaveClick() }
 
     Box(modifier = modifier.fillMaxSize()) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        Text(
-            text = "Lobby ID: ${lobbyState?.lobbyId}",
-            style = MaterialTheme.typography.titleLarge.copy(fontSize = 32.sp),
-            color = catanButtons
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        val title: String =
-            if (players.size > 1) "Players Ready: ${players.filter { it.isReady }.size} / ${players.size}"
-            else "Need at least 2 players to start"
-        Text(
-            text = title,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (playerState?.isHost == true) {
-            val allPlayersReady: Boolean = players.size > 1 && players.all { it.isReady }
-
-            Button(
-                onClick = { viewModel.startGame() },
-                enabled = allPlayersReady,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF008000),
-                    contentColor = Color.White,
-                ),
-                modifier = Modifier
-                    .border(BorderStroke(1.dp, Color.Black), CircleShape)
-                    .width(150.dp)
-                    .height(40.dp)
-            ) {
-                Text(text = "Start Game")
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Text(
+                text = "Lobby ID: ${lobbyState?.lobbyId}",
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 32.sp),
+                color = title
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
-        }
 
-        //Show player info
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(
-                12.dp,
-                alignment = Alignment.CenterVertically
+            val title: String =
+                if (players.size > 1) "Players Ready: ${players.filter { it.isReady }.size} / ${players.size}"
+                else "Need at least 2 players to start"
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp)
             )
-        ) {
-            items(
-                items = players.toList(),
-                key = { p -> p.id },
-            ) { player ->
-                PlayerListItem(
-                    player = player,
-                    isPlayer = playerState?.id == player.id,
-                    onChangeUsername = { viewModel.setUsername(it) },
-                    onToggleReadyClick = { viewModel.toggleReady() }
-                )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (playerState?.isHost == true) {
+                val allPlayersReady: Boolean = players.size > 1 && players.all { it.isReady }
+
+                Button(
+                    onClick = { viewModel.startGame() },
+                    enabled = allPlayersReady,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF008000),
+                        contentColor = Color.White,
+                    ),
+                    modifier = Modifier
+                        .border(BorderStroke(1.dp, Color.Black), CircleShape)
+                        .width(150.dp)
+                        .height(40.dp)
+                ) {
+                    Text(text = "START GAME")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
+            //Show player info
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(
+                    12.dp,
+                    alignment = Alignment.CenterVertically
+                )
+            ) {
+                items(
+                    items = players.toList(),
+                    key = { p -> p.id },
+                ) { player ->
+                    PlayerListItem(
+                        player = player,
+                        isPlayer = playerState?.id == player.id,
+                        onChangeUsername = { viewModel.setUsername(it) },
+                        onToggleReadyClick = { viewModel.toggleReady() }
+                    )
+                }
+
+            }
         }
-
-
-    }
 
         IconButton(
             onClick = onLeaveClick,
@@ -127,13 +127,13 @@ fun LobbyScreen(
                 .align(Alignment.TopStart)
                 .padding(top = 32.dp, start = 16.dp)
                 .size(40.dp)
-                .background(catanButtons, CircleShape)
+                .background(buttons, CircleShape)
                 .border(BorderStroke(1.dp, Color.Black), CircleShape)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = Color.Black
+                tint = Color.White
             )
         }
     }
