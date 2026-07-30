@@ -71,7 +71,7 @@ class MainApplication : Application() {
         return webSocketClient
     }
 
-    fun onDestroy() {
+    fun shutdown() {
         webSocketClient.close()
     }
 

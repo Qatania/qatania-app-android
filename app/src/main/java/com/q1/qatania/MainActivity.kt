@@ -182,8 +182,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val mainApplication = MainApplication.getInstance();
-        mainApplication.onDestroy()
+        if (isFinishing && !isChangingConfigurations) {
+            //Only close the websocket connection when the user leaves the app
+            MainApplication.getInstance().shutdown()
+        }
     }
 }
 

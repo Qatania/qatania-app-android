@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit
 open class WebSocketClient(private val serverUrl: String) {
     private val client = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
+        //Send a PING message every 20 seconds to keep the connection alive
+        .pingInterval(20, TimeUnit.SECONDS)
         .build()
     private var webSocket: WebSocket? = null
     open fun connect(listener: WebSocketListener) {
