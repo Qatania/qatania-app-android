@@ -1,4 +1,4 @@
-package com.q1.qatania.view
+package com.q1.qatania.view.game
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

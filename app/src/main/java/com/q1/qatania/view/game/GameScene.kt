@@ -1,4 +1,4 @@
-package com.q1.qatania.view
+package com.q1.qatania.view.game
 
 
 import android.content.res.Configuration
@@ -50,11 +50,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.filament.ColorGrading
 import com.google.android.filament.Skybox
 import com.google.android.filament.ToneMapper
-import com.q1.qatania.model.gameboard.BuildingType
 import com.q1.qatania.model.gameboard.Port
 import com.q1.qatania.model.gameboard.PortTransform
 import com.q1.qatania.model.gameboard.PortVisuals
 import com.q1.qatania.model.gameboard.Road
+import com.q1.qatania.model.gameboard.Robber
 import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.Tile
 import com.q1.qatania.model.gameboard.TileType
@@ -70,7 +70,6 @@ import com.q1.qatania.viewmodel.lobby.LobbyViewModel
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneScope
 import io.github.sceneview.SceneView
-import io.github.sceneview.SurfaceType
 import io.github.sceneview.createEnvironment
 import io.github.sceneview.gesture.CameraGestureDetector
 import io.github.sceneview.loaders.ModelLoader
@@ -802,7 +801,7 @@ private fun SceneScope.PortNode(
 
 @Composable
 private fun SceneScope.RobberNode(
-    robber: com.q1.qatania.model.gameboard.Robber,
+    robber: Robber,
     modelLoader: ModelLoader
 ) {
     if (robber.coordinates.size < 2) return;

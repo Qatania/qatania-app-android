@@ -1,4 +1,4 @@
-package com.q1.qatania.view
+package com.q1.qatania.view.game
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

@@ -29,7 +29,7 @@ import androidx.navigation.navArgument
 import com.q1.qatania.model.navigation.NavigationEvent
 import com.q1.qatania.model.notification.ColoredSnackbarVisuals
 import com.q1.qatania.theme.QataniaTheme
-import com.q1.qatania.view.GameScene
+import com.q1.qatania.view.game.GameScene
 import com.q1.qatania.view.lobby.LobbyScreen
 import com.q1.qatania.view.menu.JoinGameScreen
 import com.q1.qatania.view.menu.LobbyBrowserScreen

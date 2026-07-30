@@ -1,17 +1,12 @@
-package com.q1.qatania.view
+package com.q1.qatania.view.game
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,25 +16,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.q1.qatania.repository.GameRepository
-import com.q1.qatania.util.getDiceImage
 
 @Composable
-fun DiceResultPopup(
-    modifier: Modifier = Modifier,
-    diceState: GameRepository.DiceState,
+fun RobberPopup(
     onDismiss: () -> Unit
 ) {
-
-    val total = diceState.dice1 + diceState.dice2;
-
     Dialog(onDismissRequest = onDismiss) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -58,28 +45,16 @@ fun DiceResultPopup(
                 Column(
                     modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "${diceState.rollingPlayerUsername} rolled:",
+                        text = "You rolled a 7!",
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleMedium
                     )
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Image(
-                            painter = painterResource(id = getDiceImage(diceState.dice1)),
-                            contentDescription = "Dice 1",
-                            modifier = Modifier.size(64.dp)
-                        )
-                        Image(
-                            painter = painterResource(id = getDiceImage(diceState.dice2)),
-                            contentDescription = "Dice 2",
-                            modifier = Modifier.size(64.dp)
-                        )
-                    }
-
                     Text(
-                        text = "Total: $total",
+                        text = "Move the robber by tapping on a tile.",
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleSmall
                     )
                 }

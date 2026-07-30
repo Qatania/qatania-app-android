@@ -1,4 +1,4 @@
-package com.q1.qatania.view
+package com.q1.qatania.view.game
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +27,6 @@ import com.q1.qatania.model.gameboard.TileType
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.theme.catanClayDark
 import com.q1.qatania.util.getResourceIcon
-import com.q1.qatania.util.hexToFloat4
 
 @Composable
 fun ResourceBar(
