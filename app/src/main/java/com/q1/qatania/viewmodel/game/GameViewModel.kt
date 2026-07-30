@@ -9,123 +9,77 @@ import com.q1.qatania.model.gameboard.BuildingType
 import com.q1.qatania.model.gameboard.Road
 import com.q1.qatania.model.gameboard.SettlementPosition
 import com.q1.qatania.model.gameboard.TileType
+import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.repository.GameRepository
 import com.q1.qatania.repository.GameRepository.DiceState
 import com.q1.qatania.repository.LobbyRepository
 import com.q1.qatania.repository.PlayerInfoRepository
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 
 class GameViewModel : ViewModel() {
 
     val playerInfoRepository = PlayerInfoRepository.getInstance()
     val gameRepository = GameRepository.getInstance()
+
     val self = playerInfoRepository.getPlayerId()
 
     fun cheat(lobbyId: String, tileType: TileType) {
         Log.d("GameViewModel", "Cheating attempt with tile type $tileType")
-        val message = buildJsonObject {
-            put("resource", tileType.toString())
-        }
-
-        val messageDTO = MessageDTO(
-            type = MessageType.CHEAT_ATTEMPT,
-            lobbyId = lobbyId,
-            player = self,
-            message = message
+        gameRepository.cheat(
+            self,
+            lobbyId,
+            tileType
         )
-
-        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
-    fun report(lobbyId: String, playerToId: String) {
-        val playerFromId = self
-        Log.d("GameViewModel", "$playerFromId is reporting $playerToId")
-
-        val messageDTO = MessageDTO(
-            type = MessageType.REPORT_PLAYER,
-            player = playerFromId,
-            lobbyId = lobbyId,
-            message = buildJsonObject {
-                put("reportedId", playerToId)
-            }
+    fun report(lobbyId: String, reportedPlayerId: String) {
+        Log.d("GameViewModel", "$self is reporting $reportedPlayerId")
+        gameRepository.reportPlayer(
+            self,
+            lobbyId,
+            reportedPlayerId
         )
-
-        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
     fun rollDice(lobbyId: String) {
-        val messageDTO = MessageDTO(
-            type = MessageType.ROLL_DICE,
-            lobbyId = lobbyId,
-            player = self,
-        )
-
-        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+        gameRepository.rollDice(self, lobbyId)
     }
 
     fun handleEndTurnClick(lobbyId: String) {
-        val messageDTO = MessageDTO(
-            type = MessageType.END_TURN,
-            lobbyId = lobbyId,
-            player = self,
-        )
-
-        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+        gameRepository.endTurn(self, lobbyId)
     }
 
     fun handleRoadTap(lobbyId: String, road: Road) {
         Log.d("GameViewModel", "Tapped road $road")
-        val message = buildJsonObject { put("roadId", road.id) }
-        val messageDTO = MessageDTO(
-            type = MessageType.PLACE_ROAD,
-            lobbyId = lobbyId,
-            player = self,
-            message = message
-        )
-
-        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+        gameRepository.buildRoad(self, lobbyId, road.id)
     }
 
-    fun onTileClick(lobbyId: String, tileId: Int) {
-        val lobbyRepository = LobbyRepository.getInstance()
-        val currentPlayer = lobbyRepository.lobbyState.value?.players?.get(self)
+    fun handleTileTap(lobbyId: String, player: PlayerModel?, tileId: Int) {
+        Log.d("GameViewModel", "Tapped tile $tileId")
 
-        // Jetzt verlassen wir uns rein auf das Signal vom Server
-        if (currentPlayer?.isActivePlayer == true && currentPlayer.needsToMoveRobber) {
-            Log.d("GameViewModel", "Server says: Move the robber!")
-            val messageDTO = MessageDTO(
-                type = MessageType.PLACE_ROBBER,
-                lobbyId = lobbyId,
-                player = self,
-                message = buildJsonObject { put("tileId", tileId) }
-            )
-            MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
+        if (player?.isActivePlayer == true && player.needsToMoveRobber) {
+            gameRepository.placeRobber(self, lobbyId, tileId)
         }
     }
 
     fun handleSettlementTap(lobbyId: String, settlementPosition: SettlementPosition) {
         Log.d("GameViewModel", "Tapped settlement position $settlementPosition")
-
         val isUpgrade: Boolean = settlementPosition.building?.type == BuildingType.Settlement
-        val type: MessageType =
-            if (isUpgrade) MessageType.UPGRADE_SETTLEMENT else MessageType.PLACE_SETTLEMENT
-
-        val message = buildJsonObject {
-            put("settlementPositionId", settlementPosition.id)
+        if(isUpgrade) {
+            gameRepository.upgradeSettlement(
+                self,
+                lobbyId,
+                settlementPosition.id
+            )
+        } else {
+            gameRepository.buildSettlement(
+                self,
+                lobbyId,
+                settlementPosition.id
+            )
         }
-
-        val messageDTO = MessageDTO(
-            type = type,
-            lobbyId = lobbyId,
-            player = self,
-            message = message
-        )
-
-        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
 
@@ -143,18 +97,11 @@ class GameViewModel : ViewModel() {
         tradeRequest: Pair<Map<TileType, Int>, Map<TileType, Int>>,
         lobbyId: String
     ) {
-        val message = buildJsonObject {
-            put("offeredResources", Json.encodeToJsonElement(tradeRequest.first))
-            put("targetResources", Json.encodeToJsonElement(tradeRequest.second))
-        }
-
-        val messageDTO = MessageDTO(
-            type = MessageType.TRADE_WITH_BANK,
-            lobbyId = lobbyId,
-            player = self,
-            message = message
+        gameRepository.submitBankTrade(
+            self,
+            lobbyId,
+            tradeRequest
         )
-        MainApplication.getInstance().getWebSocketClient().sendMessage(messageDTO)
     }
 
 }

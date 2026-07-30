@@ -280,12 +280,13 @@ fun GameScene(
                         TileNode(
                             tile = tile,
                             modelLoader = modelLoader,
-                            onTileClick = {
-                                gameViewModel.onTileClick(
+                            onTileNodeTap = {
+                                gameViewModel.handleTileTap(
                                     lobbyId,
+                                    playerState,
                                     tile.id
                                 )
-                            } // Pass the handler
+                            }
                         )
                     }
                 }
@@ -308,8 +309,12 @@ fun GameScene(
                             modelLoader = modelLoader,
                             buildModeActivated = buildModeActivated,
                             buildModeYOffset = buildModeYOffset,
-                            lobbyId = lobbyId,
-                            gameViewModel = gameViewModel
+                            onSettlementNodeTap = { settlementPosition ->
+                                gameViewModel.handleSettlementTap(
+                                    lobbyId,
+                                    settlementPosition
+                                )
+                            }
                         )
                     }
                 }
@@ -321,8 +326,9 @@ fun GameScene(
                             modelLoader = modelLoader,
                             buildModeActivated = buildModeActivated,
                             buildModeYOffset = buildModeYOffset,
-                            lobbyId = lobbyId,
-                            gameViewModel = gameViewModel
+                            onRoadNodeTap = {
+                                gameViewModel.handleRoadTap(lobbyId, road)
+                            }
                         )
                     }
                 }
@@ -477,8 +483,7 @@ private fun SceneScope.RoadNode(
     modelLoader: ModelLoader,
     buildModeActivated: Boolean,
     buildModeYOffset: Float,
-    lobbyId: String,
-    gameViewModel: GameViewModel
+    onRoadNodeTap: () -> Unit
 ) {
     val roadPosition = Float3(
         road.coordinates[0].toFloat(),
@@ -533,11 +538,7 @@ private fun SceneScope.RoadNode(
             isTouchable = true
             isHittable = true
             onSingleTapConfirmed = {
-                Log.d(
-                    "GameScene",
-                    "Detected Tab on road ${road.id} with buildMode = $buildModeActivated"
-                )
-                gameViewModel.handleRoadTap(lobbyId, road)
+                onRoadNodeTap()
                 true; //-> Means tap event is consumed and should not be propagated
             }
         }
@@ -559,8 +560,7 @@ private fun SceneScope.SettlementPositionNode(
     modelLoader: ModelLoader,
     buildModeActivated: Boolean,
     buildModeYOffset: Float,
-    lobbyId: String,
-    gameViewModel: GameViewModel
+    onSettlementNodeTap: (SettlementPosition) -> Unit
 ) {
     val position = Float3(
         settlementPosition.coordinates[0].toFloat(),
@@ -598,16 +598,11 @@ private fun SceneScope.SettlementPositionNode(
     //Keeps the reference to the SphereNode below so that its
     //attributes can be updated later on in SideEffect
     val nodeRef = remember { NodeRef<SphereNode>() }
-
-    val settlementAction: (MotionEvent) -> Boolean = {
-        gameViewModel.handleSettlementTap(
-            lobbyId,
-            settlementPosition
-        )
-        true; //-> Means tap event is consumed and should not be propagated
-    }
-
     val color: String = building?.color ?: "#FFFFFF"
+    val handleSettlementNodeTap: (MotionEvent) -> Boolean = {
+        onSettlementNodeTap(settlementPosition);
+        true
+    }
 
     SphereNode(
         radius = 0.1f,
@@ -619,7 +614,7 @@ private fun SceneScope.SettlementPositionNode(
             nodeRef.node = this
             isTouchable = true
             isHittable = true
-            onSingleTapConfirmed = settlementAction
+            onSingleTapConfirmed = handleSettlementNodeTap
         }
     )
 
@@ -628,8 +623,8 @@ private fun SceneScope.SettlementPositionNode(
         nodeRef.node?.let {
             it.isVisible = buildModeActivated
             it.isHittable = buildModeActivated
-            //Setting settlement action again here so that the closure gets the correct state
-            it.onSingleTapConfirmed = settlementAction
+            //Fix weird closure behaviour which results in stale data
+            it.onSingleTapConfirmed = handleSettlementNodeTap
         }
     }
 
@@ -639,7 +634,7 @@ private fun SceneScope.SettlementPositionNode(
 private fun SceneScope.TileNode(
     tile: Tile,
     modelLoader: ModelLoader,
-    onTileClick: () -> Unit
+    onTileNodeTap: () -> Unit
 ) {
     val tilePosition = Float3(
         tile.coordinates[0].toFloat(),
@@ -661,7 +656,7 @@ private fun SceneScope.TileNode(
                 isTouchable = true
                 isHittable = true
                 onSingleTapConfirmed = {
-                    onTileClick()
+                    onTileNodeTap()
                     true
                 }
             }

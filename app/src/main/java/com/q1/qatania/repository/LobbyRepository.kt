@@ -4,14 +4,11 @@ import android.util.Log
 import com.q1.qatania.MainApplication
 import com.q1.qatania.model.dto.MessageDTO
 import com.q1.qatania.model.dto.MessageType
-import com.q1.qatania.model.gameboard.GameBoardModel
 import com.q1.qatania.model.lobby.LobbyInfo
 import com.q1.qatania.model.lobby.LobbyState
 import com.q1.qatania.model.player.PlayerModel
 import com.q1.qatania.util.jsonParser
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -115,6 +112,7 @@ class LobbyRepository private constructor() : AbstractRepository() {
             MessageType.LOBBY_CREATED,
             MessageType.PLAYER_JOINED,
             MessageType.LOBBY_UPDATED -> handleLobbyUpdated(messageDTO)
+
             MessageType.LOBBY_CLOSED -> handleLobbyClosed(messageDTO)
             MessageType.GAME_STARTED,
             MessageType.GAME_BOARD_JSON,
@@ -123,7 +121,9 @@ class LobbyRepository private constructor() : AbstractRepository() {
             MessageType.NEXT_TURN,
             MessageType.DICE_RESULT,
             MessageType.PLAYER_RESOURCE_UPDATE,
+            MessageType.PLACE_ROBBER,
             MessageType.UPGRADE_SETTLEMENT -> handlePlayerResourceUpdate(messageDTO)
+
             MessageType.LOBBY_LIST -> handleLobbyList(messageDTO)
 
             else -> {}
