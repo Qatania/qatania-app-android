@@ -224,11 +224,8 @@ declared in the project's build files.
 
 ### Assets
 
-All 3D models used in the game are handmade by us. No pre-built, purchased or downloaded model assets
+All 3D models used in the game are handmade. No pre-built, purchased or downloaded model assets
 are part of this project.
-
-> **Note:** please verify the license text and version of each dependency in the Gradle build files
-> before submission, and add anything else that ended up in the project (e.g. sound files or fonts).
 
 ## Use of AI Tools
 
