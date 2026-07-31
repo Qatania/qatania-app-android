@@ -42,3 +42,14 @@ fun QataniaTheme(
         content = content
     )
 }
+
+@Composable
+fun QataniaGameTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme.copy(
+            background = gameBackground,
+            onBackground = Color.White
+        ),
+        content = content
+    )
+}

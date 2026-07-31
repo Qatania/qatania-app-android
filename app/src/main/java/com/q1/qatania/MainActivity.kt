@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.q1.qatania.model.navigation.NavigationEvent
 import com.q1.qatania.model.notification.ColoredSnackbarVisuals
+import com.q1.qatania.theme.QataniaGameTheme
 import com.q1.qatania.theme.QataniaTheme
 import com.q1.qatania.view.game.GameScene
 import com.q1.qatania.view.lobby.LobbyScreen
@@ -100,7 +101,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     snackbarHost = {
@@ -116,22 +116,23 @@ class MainActivity : ComponentActivity() {
                     },
                 ) { innerPadding ->
 
+                    NavHost(
+                        navController = navController,
+                        startDestination = "main"
+                    ) {
 
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        NavHost(
-                            navController = navController,
-                            startDestination = "main"
-                        ) {
-
-                            composable("main") {
+                        composable("main") {
+                            Box(modifier = Modifier.padding(innerPadding)) {
                                 StartScreen(
                                     onCreateGameClick = { menuViewModel.createLobby() },
                                     onJoinGameClick = { menuViewModel.navigateToJoinScreen() }
                                 )
                             }
+                        }
 
-                            //Join Game screen
-                            composable("join") {
+                        //Join Game screen
+                        composable("join") {
+                            Box(modifier = Modifier.padding(innerPadding)) {
                                 JoinGameScreen(
                                     onJoinClick = { lobbyId ->
                                         menuViewModel.joinLobby(lobbyId)
@@ -142,8 +143,10 @@ class MainActivity : ComponentActivity() {
                                     onBackClick = { navController.popBackStack() }
                                 )
                             }
+                        }
 
-                            composable("lobbies") {
+                        composable("lobbies") {
+                            Box(modifier = Modifier.padding(innerPadding)) {
                                 LobbyBrowserScreen(
                                     lobbies = lobbies ?: emptyList(),
                                     onRefreshClick = { menuViewModel.getLobbies() },
@@ -153,24 +156,28 @@ class MainActivity : ComponentActivity() {
                                     onBackClick = { navController.popBackStack() }
                                 )
                             }
+                        }
 
-                            //Lobby Screen
-                            composable(
-                                route = "lobby/{lobbyId}",
-                                arguments = listOf(
-                                    navArgument("lobbyId") { type = NavType.StringType },
-                                )
-                            ) { backStackEntry ->
+                        //Lobby Screen
+                        composable(
+                            route = "lobby/{lobbyId}",
+                            arguments = listOf(
+                                navArgument("lobbyId") { type = NavType.StringType },
+                            )
+                        ) { backStackEntry ->
+                            Box(modifier = Modifier.padding(innerPadding)) {
                                 LobbyScreen(onLeaveClick = { menuViewModel.leaveLobby() })
                             }
+                        }
 
-                            //Game Scene
-                            composable(
-                                route = "game/{lobbyId}",
-                                arguments = listOf(
-                                    navArgument("lobbyId") { type = NavType.StringType },
-                                )
-                            ) { backStackEntry ->
+                        //Game Scene
+                        composable(
+                            route = "game/{lobbyId}",
+                            arguments = listOf(
+                                navArgument("lobbyId") { type = NavType.StringType },
+                            )
+                        ) { backStackEntry ->
+                            QataniaGameTheme {
                                 GameScene(onReturnToMenu = { menuViewModel.returnToMenu() })
                             }
                         }
